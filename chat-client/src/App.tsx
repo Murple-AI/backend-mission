@@ -5,9 +5,14 @@ function App() {
     const [messages, setMessages] = useState([])
     const ws = useRef<WebSocket>(null)
 
+
+
+    // 환경변수에서 WebSocket 서버 주소 가져오기
+    const websocketUrl = import.meta.env.VITE_CHAT_SERVER || 'ws://localhost:8080';
+
     useEffect(() => {
         // WebSocket 연결
-        ws.current = new WebSocket('ws://localhost:8080')
+        ws.current = new WebSocket(websocketUrl)
 
         // 메시지 수신 시 처리
         ws.current.onmessage = ({ data }) => {

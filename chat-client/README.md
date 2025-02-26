@@ -1,50 +1,19 @@
-# React + TypeScript + Vite
+# Chat Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+테스트용 채팅 클라이언트입니다.
 
-Currently, two official plugins are available:
+## 사용법
+1. 도커 사용
+   1. 도커 이미지 빌드시 `CHAT_SERVER` 환경변수에 웹소켓 서버 주소를 전달합니다. - 도커에서 접근할 수 있는 주소여야 합니다.
+     ```bash
+    docker build . --build-arg CHAT_SERVER=[ws://호스트:포트번호] -t murple-test-chat-client .
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+    docker run -it --rm -p [원하는포트:80]  murple-test-chat-client
+    ```
+   2. 도커 컨테이너는 80 포트를 사용합니다. 원하는 포트로 매핑 후 브라우저에서 접속합니다.
+2. pnpm 등 패키지 매니저 사용
+   1. 패키지 매니저를 사용하여 의존성을 설치합니다.
+   2. `CHAT_SERVER` 환경변수에 웹소켓 서버 주소를 전달합니다.
+   3. `dev` 명령어로 실행합니다.
+   4. 브라우저에서 `http://localhost:5173`으로 접속합니다.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
