@@ -67,6 +67,8 @@ jobs:
             --head $NEW_BRANCH \
             --title "[Review] ${{ env.PR_TITLE }}" \
             --body-file <(echo "${{ github.event.pull_request.body }} (Original PR: #${{ env.PR_NUMBER }})")
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Close and Delete Original PR
         run: |
