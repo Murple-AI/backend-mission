@@ -94,9 +94,8 @@ jobs:
           gh pr edit ${{ env.PR_NUMBER }} --title "[Closed]" --body " " --base temp-branch
           git reset --hard origin/main
           git push origin --force
-          git push origin --delete ${{ env.PR_BRANCH }}
           gh pr edit ${{ env.PR_NUMBER }} --base main
-          gh pr close ${{ env.PR_NUMBER }}
+          gh pr close ${{ env.PR_NUMBER }} --delete-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
