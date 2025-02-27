@@ -44,6 +44,7 @@ jobs:
           echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
           
           # 원본 PR 브랜치 내용을 private repo로 push
+          git checkout -b $NEW_BRANCH
           git push submit $NEW_BRANCH
 
       - name: Create PR in Private Repo
