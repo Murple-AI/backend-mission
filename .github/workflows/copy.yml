@@ -81,10 +81,10 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout ${{ env.PR_BRANCH }}
+          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed] ${{ env.PR_TITLE }}" --body "This PR has been copied to a private repository for review." --base ${{ env.PR_BRANCH }} 
           git reset --hard origin/main
           git push origin --force
           git push origin --delete ${{ env.PR_BRANCH }}
-          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed] ${{ env.PR_TITLE }}" --body "This PR has been copied to a private repository for review." --base ${{ env.PR_BRANCH }} 
           gh pr close ${{ env.PR_NUMBER }} --delete-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
