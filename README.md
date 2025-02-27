@@ -35,7 +35,7 @@
   - 사용자 정보를 조회하는 API
   - 사용자 정보를 수정하는 API
   - 사용자 정보를 삭제하는 API
-- 요청 및 응답 데이터 형식: JSON 사용 (추가적으로 Content Negotiation을 통해 XML 지원 가능)
+- 요청 및 응답 데이터 형식: JSON 사용
 - 인증: API 서버는 인증 기능을 포함하지 않습니다.
 - HTTP Method 제한: GET, POST, PUT, DELETE만 사용
 - 적절한 HTTP Status Code 사용
