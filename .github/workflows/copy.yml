@@ -9,6 +9,10 @@ on:
 jobs:
   copy_code:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
       - name: Extract PR Info
         id: pr_info
@@ -27,6 +31,9 @@ jobs:
         with:
           ref: ${{ env.PR_BRANCH }}
           fetch-depth: 0
+          # 중간에 브랜치, 리모트 소스를 바꾸어야 하므로 크리덴셜은 저장하지 않음
+          # 저장해 두면 권한 문제로 인해 push가 안 될 수 있음
+          persist-credentials: false
 
       - name: Extract PR Author Email
         run: |
@@ -36,24 +43,21 @@ jobs:
 
       - name: Add Private Repo source
         run: |
+          NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}-${{ env.SHORT_SHA }}"
+          echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
+          git checkout -b $NEW_BRANCH
+
           git remote add submit https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git
-          git config user.email ${{ env.PR_AUTHOR_EMAIL }}
-          git config user.name ${{ env.PR_AUTHOR }}
+
+          git clone https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git private-review-repo
 
           #- name: Debug Git Repository
 
-          pwd  # 현재 디렉토리 확인
-          ls -la  # 파일 목록 확인
-          git status  # Git 상태 확인
           git remote -v  # 원격 저장소 목록 확인
           git branch --list  # 브랜치 목록 확인
-
-          NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}-${{ env.SHORT_SHA }}"
-          echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
-          
           # 원본 PR 브랜치 내용을 private repo로 push
-          git checkout -b $NEW_BRANCH
-          git push submit --set-upstream $NEW_BRANCH
+          git branch -r
+          git push -u submit $NEW_BRANCH --force
 
       - name: Create PR in Private Repo
         run: |
