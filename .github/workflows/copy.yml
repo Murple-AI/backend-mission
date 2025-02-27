@@ -37,14 +37,14 @@ jobs:
           cd private-review
           git config user.email "bot@example.com"
           git config user.name "GitHub Actions Bot"
+          echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create and Switch to New Branch in Private Repo
         run: |
           cd private-review
-          SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-          NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}-${{ SHORT_SHA }}"
+          NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}-${{ env.SHORT_SHA }}"
           git checkout -b $NEW_BRANCH
           echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
 
