@@ -1,0 +1,82 @@
+name: Copy PR to Private Repo and Create PR
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  copy_code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract PR Info
+        id: pr_info
+        run: |
+          echo "PR_BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+          echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+          echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+          echo "PR_BODY=${{ github.event.pull_request.body }}" >> $GITHUB_ENV
+          echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          
+          # PR 작성자의 이메일 추출
+          PR_AUTHOR_EMAIL=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} --jq '.user.email' || echo "unknown@example.com")
+          echo "PR_AUTHOR_EMAIL=$PR_AUTHOR_EMAIL" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PR_BRANCH }}
+          fetch-depth: 0
+
+      - name: Clone Private Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple_AI/backend-mission-submit.git private-review
+          cd private-review
+          git config user.email "bot@example.com"
+          git config user.name "GitHub Actions Bot"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and Switch to New Branch in Private Repo
+        run: |
+          cd private-review
+          NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}"
+          git checkout -b $NEW_BRANCH
+          echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
+
+      - name: Copy PR Code to Private Repo
+        run: |
+          cd private-review
+          rsync -av --exclude=".git" --exclude="private-review" ../. .
+          git add .
+          git commit -m "Copy PR #${{ env.PR_NUMBER }} from ${{ env.PR_AUTHOR }} <${{ env.PR_AUTHOR_EMAIL }}>"
+          git push origin $NEW_BRANCH
+
+      - name: Create PR in Private Repo
+        run: |
+          gh pr create \
+            --repo Murple_AI/backend-mission-submit \
+            --base main \
+            --head $NEW_BRANCH \
+            --title "[Review] ${{ env.PR_TITLE }}" \
+            --body "${{ env.PR_BODY }} (Original PR: #${{ env.PR_NUMBER }})"
+        env:
+          GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
+
+      - name: Delete Original PR Branch
+        run: |
+          curl -X DELETE -H "Authorization: token ${{ secrets.REVIEW_REPO_PAT }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/${{ github.repository }}/git/refs/heads/${{ env.PR_BRANCH }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Close and Delete Original PR
+        run: |
+          gh pr close ${{ env.PR_NUMBER }} --delete-comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
