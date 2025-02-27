@@ -9,6 +9,10 @@ on:
 jobs:
   copy_code:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
       - name: Extract PR Info
         id: pr_info
