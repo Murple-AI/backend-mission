@@ -59,7 +59,7 @@ jobs:
             --exclude=".editorconfig" \
             --exclude=".vscode" \
             --exclude=".idea" \
-            --exclude="chat-client"
+            --exclude="chat-client" \
             ../. .
           git add .
           git commit -m "Copy PR #${{ env.PR_NUMBER }} from ${{ env.PR_AUTHOR }} <${{ env.PR_AUTHOR_EMAIL }}>"
