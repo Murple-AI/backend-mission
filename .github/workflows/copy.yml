@@ -39,14 +39,10 @@ jobs:
           NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}-${{ env.SHORT_SHA }}"
           echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
           git checkout -b $NEW_BRANCH
-          git branch --show-current
-
-          echo "https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git"
 
           git remote add submit https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git
-          git ls-remote submit
-          git config user.email ${{ env.PR_AUTHOR_EMAIL }}
-          git config user.name ${{ env.PR_AUTHOR }}
+
+          git clone https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git private-review-repo
 
           #- name: Debug Git Repository
 
