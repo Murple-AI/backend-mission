@@ -10,6 +10,10 @@ jobs:
   copy_code:
     runs-on: ubuntu-latest
     permissions:
+      checks: read
+      statuses: read
+      actions: read
+      repository-projects: read
       contents: write
       pull-requests: write
 
@@ -81,11 +85,18 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout ${{ env.PR_BRANCH }}
-          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed] ${{ env.PR_TITLE }}" --body "This PR has been copied to a private repository for review." --base ${{ env.PR_BRANCH }} 
+
+          # GraphQL: Resource not accessible by integration (repository.pullRequest.projectCards.nodes)
+          # 위와 같은 에러는 보통 권한 문제로 인해 발생
+          # permissions 설정을 확인하고, 권한이 없는 경우에는 토큰을 확인
+          
+          gh pr edit ${{ env.PR_NUMBER }} --base temp-branch
+          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed]" --body " " --base temp-branch
           git reset --hard origin/main
           git push origin --force
           git push origin --delete ${{ env.PR_BRANCH }}
-          gh pr close ${{ env.PR_NUMBER }} --delete-branch
+          gh pr edit ${{ env.PR_NUMBER }} --base main
+          gh pr close ${{ env.PR_NUMBER }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
