@@ -68,7 +68,7 @@ jobs:
             --title "[Review] ${{ env.PR_TITLE }}" \
             --body-file <(echo "${{ github.event.pull_request.body }} (Original PR: #${{ env.PR_NUMBER }})")
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
 
       - name: Close and Delete Original PR
         run: |
