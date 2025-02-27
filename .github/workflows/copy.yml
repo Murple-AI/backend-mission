@@ -36,7 +36,7 @@ jobs:
 
       - name: Add Private Repo source
         run: |
-          git remote add submit https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git
+          git remote add submit git@github.com:Murple-AI/backend-mission-submit.git
           git ls-remote submit
           git config user.email ${{ env.PR_AUTHOR_EMAIL }}
           git config user.name ${{ env.PR_AUTHOR }}
