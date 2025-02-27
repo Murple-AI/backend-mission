@@ -61,18 +61,28 @@ jobs:
 
       - name: Create PR in Private Repo
         run: |
+          # 이 작업을 위해서는 미리 두 리포지토리에 공통 커밋이 있어야 함
+          # PR대상 브랜치에 타겟 리포지토리의 브랜치 히스토리 추가
+          # git remote add target https://github.com/target-org/target-repo.git
+          # git fetch target
+          # git merge --allow-unrelated-histories target/main
+          # git push 
+
           gh pr create \
             --repo Murple-AI/backend-mission-submit \
             --base main \
             --head $NEW_BRANCH \
-            --title "[Review] ${{ env.PR_TITLE }}" \
+            --title "[Review] ${{ env.PR_AUTHOR }} / ${{ env.PR_AUTHOR_EMAIL }} - ${{ env.PR_TITLE }}" \
             --body-file <(echo "${{ github.event.pull_request.body }} (Original PR: #${{ env.PR_NUMBER }})")
         env:
           GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
 
       - name: Close and Delete Original PR
         run: |
-          gh pr close ${{ env.PR_NUMBER }} -d -c "This PR has been copied to a private repository for review."
+          git reset --hard origin/main
+          git push --force
+          git push origin --delete ${{ env.PR_BRANCH }}
+          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed] ${{ env.PR_TITLE }}" --body "This PR has been copied to a private repository for review." --state closed
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
