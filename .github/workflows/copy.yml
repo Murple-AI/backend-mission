@@ -50,7 +50,17 @@ jobs:
       - name: Copy PR Code to Private Repo
         run: |
           cd private-review
-          rsync -av --exclude=".git" --exclude="private-review" ../. .
+          rsync -av \
+            --exclude=".git" \
+            --exclude="private-review" \
+            --exclude=".github" \
+            --exclude=".gitignore" \
+            --exclude=".gitattributes" \
+            --exclude=".editorconfig" \
+            --exclude=".vscode" \
+            --exclude=".idea" \
+            --exclude="chat-client"
+            ../. .
           git add .
           git commit -m "Copy PR #${{ env.PR_NUMBER }} from ${{ env.PR_AUTHOR }} <${{ env.PR_AUTHOR_EMAIL }}>"
           git push origin $NEW_BRANCH
