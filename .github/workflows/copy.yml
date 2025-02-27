@@ -88,5 +88,5 @@ jobs:
           git push origin --delete ${{ env.PR_BRANCH }}
           gh pr close ${{ env.PR_NUMBER }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
 
