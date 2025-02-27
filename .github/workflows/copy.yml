@@ -31,6 +31,7 @@ jobs:
         with:
           ref: ${{ env.PR_BRANCH }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Extract PR Author Email
         run: |
