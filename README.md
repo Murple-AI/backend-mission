@@ -29,7 +29,6 @@
 
 ### REST API
 - 프레임워크: Spring Boot + Kotlin을 사용하여 RESTful API를 구현합니다.
-- Spring Boot/Kotlin을 사용하여 API 서버를 구현해주세요.
 - API 서버는 다음과 같은 기능을 제공해야 합니다.
   - 사용자 정보를 저장하는 API
   - 사용자 정보를 조회하는 API
