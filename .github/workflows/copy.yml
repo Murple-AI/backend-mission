@@ -18,11 +18,14 @@ jobs:
           echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           
-          # PR 작성자의 이메일 추출
-          PR_AUTHOR_EMAIL=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} --jq '.user.email' || echo "unknown@example.com")
-          echo "PR_AUTHOR_EMAIL=$PR_AUTHOR_EMAIL" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract PR Author Email
+        run: |
+          PR_COMMIT_SHA=$(git rev-list --max-parents=0 HEAD)  # PR의 첫 번째 커밋 SHA 찾기
+          PR_AUTHOR_EMAIL=$(git show -s --format='%ae' $PR_COMMIT_SHA || echo "unknown@example.com")
+          echo "PR_AUTHOR_EMAIL=$PR_AUTHOR_EMAIL" >> $GITHUB_ENV
 
       - name: Checkout PR Code
         uses: actions/checkout@v4
@@ -36,7 +39,6 @@ jobs:
           cd private-review
           git config user.email ${{ env.PR_AUTHOR_EMAIL }}
           git config user.name ${{ env.PR_AUTHOR }}
-          echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
