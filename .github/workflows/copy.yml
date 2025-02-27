@@ -79,8 +79,9 @@ jobs:
 
       - name: Close and Delete Original PR
         run: |
+          git checkout ${{ env.PR_BRANCH }}
           git reset --hard origin/main
-          git push --force
+          git push origin --force
           git push origin --delete ${{ env.PR_BRANCH }}
           gh pr edit ${{ env.PR_NUMBER }} --title "[Closed] ${{ env.PR_TITLE }}" --body "This PR has been copied to a private repository for review." --state closed
         env:
