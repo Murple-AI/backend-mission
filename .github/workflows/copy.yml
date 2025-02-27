@@ -54,7 +54,9 @@ jobs:
           
           # 원본 PR 브랜치 내용을 private repo로 push
           git checkout -b $NEW_BRANCH
-          GITHUB_TOKEN=${{ secrets.REVIEW_REPO_PAT }} git push submit $NEW_BRANCH
+          git branch -r
+          git branch --show-current
+          git push -u submit $NEW_BRANCH --force
 
       - name: Create PR in Private Repo
         run: |
