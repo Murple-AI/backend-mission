@@ -34,8 +34,8 @@ jobs:
         run: |
           git clone https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git private-review
           cd private-review
-          git config user.email "bot@example.com"
-          git config user.name "GitHub Actions Bot"
+          git config user.email ${{ env.PR_AUTHOR_EMAIL }}
+          git config user.name ${{ env.PR_AUTHOR }}
           echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,13 +44,13 @@ jobs:
         run: |
           cd private-review
           NEW_BRANCH="review/${{ env.PR_AUTHOR }}-${{ env.PR_BRANCH }}-${{ env.SHORT_SHA }}"
+          echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
           
           # 원본 PR 브랜치 내용을 private repo로 push
           git remote add source ${{ github.server_url }}/${{ github.repository }}.git
           git fetch source ${{ env.PR_BRANCH }}
           git checkout -b $NEW_BRANCH source/${{ env.PR_BRANCH }}
           git push origin $NEW_BRANCH
-          echo "NEW_BRANCH=$NEW_BRANCH" >> $GITHUB_ENV
 
       - name: Create PR in Private Repo
         run: |
