@@ -33,7 +33,7 @@ jobs:
 
       - name: Clone Private Repo
         run: |
-          git clone https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple_AI/backend-mission-submit.git private-review
+          git clone https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git private-review
           cd private-review
           git config user.email "bot@example.com"
           git config user.name "GitHub Actions Bot"
@@ -58,7 +58,7 @@ jobs:
       - name: Create PR in Private Repo
         run: |
           gh pr create \
-            --repo Murple_AI/backend-mission-submit \
+            --repo Murple-AI/backend-mission-submit \
             --base main \
             --head $NEW_BRANCH \
             --title "[Review] ${{ env.PR_TITLE }}" \
