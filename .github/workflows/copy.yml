@@ -79,6 +79,7 @@ jobs:
 
       - name: Close and Delete Original PR
         run: |
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git checkout ${{ env.PR_BRANCH }}
           git reset --hard origin/main
           git push origin --force
