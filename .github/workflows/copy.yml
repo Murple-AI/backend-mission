@@ -76,17 +76,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
 
-      - name: Delete Original PR Branch
-        run: |
-          curl -X DELETE -H "Authorization: token ${{ secrets.REVIEW_REPO_PAT }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/${{ github.repository }}/git/refs/heads/${{ env.PR_BRANCH }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Close and Delete Original PR
         run: |
-          gh pr close ${{ env.PR_NUMBER }} --delete-comment
+          gh pr close ${{ env.PR_NUMBER }} -d -c "This PR has been copied to a private repository for review."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
