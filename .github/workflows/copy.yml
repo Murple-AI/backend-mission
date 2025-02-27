@@ -16,7 +16,6 @@ jobs:
           echo "PR_BRANCH=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
           echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
           echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
-          echo "PR_BODY=${{ github.event.pull_request.body }}" >> $GITHUB_ENV
           echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           
           # PR 작성자의 이메일 추출
@@ -60,7 +59,7 @@ jobs:
             --base main \
             --head $NEW_BRANCH \
             --title "[Review] ${{ env.PR_TITLE }}" \
-            --body "${{ env.PR_BODY }} (Original PR: #${{ env.PR_NUMBER }})"
+            --body-file <(echo "${{ github.event.pull_request.body }} (Original PR: #${{ env.PR_NUMBER }})")
         env:
           GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
 
