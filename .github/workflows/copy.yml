@@ -10,6 +10,10 @@ jobs:
   copy_code:
     runs-on: ubuntu-latest
     permissions:
+      checks: read
+      statuses: read
+      actions: read
+      repository-projects: read
       contents: write
       pull-requests: write
 
@@ -88,5 +92,8 @@ jobs:
           git push origin --delete ${{ env.PR_BRANCH }}
           gh pr close ${{ env.PR_NUMBER }}
         env:
-          GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
+        # GraphQL: Resource not accessible by integration (repository.pullRequest.projectCards.nodes)
+        # 위와 같은 에러는 보통 권한 문제로 인해 발생
+        # 토큰/권한을 확인
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
