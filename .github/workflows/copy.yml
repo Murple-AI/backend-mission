@@ -60,9 +60,8 @@ jobs:
           # 이 작업을 위해서는 미리 두 리포지토리에 공통 커밋이 있어야 함
           # PR대상 브랜치에 타겟 리포지토리의 브랜치 히스토리 추가
           # git remote add target https://github.com/target-org/target-repo.git
-          # git fetch target
-          # git merge --allow-unrelated-histories target/main
-          # git push 
+          git fetch submit
+          git merge --allow-unrelated-histories submit/main
 
           gh pr create \
             --repo Murple-AI/backend-mission-submit \
