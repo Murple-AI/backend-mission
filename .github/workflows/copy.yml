@@ -33,7 +33,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2  # 최근 2개의 커밋을 가져옴
+          fetch-depth: 0  # 최근 2개의 커밋을 가져옴
           persist-credentials: false
 
       - name: Get Commit Author Email
