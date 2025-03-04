@@ -61,6 +61,8 @@ jobs:
           # PR대상 브랜치에 타겟 리포지토리의 브랜치 히스토리 추가
           # git remote add target https://github.com/target-org/target-repo.git
           git fetch submit
+          git config --global user.email "${{ env.PR_AUTHOR_EMAIL}}"
+          git config --global user.name "${{ env.PR_AUTHOR }}"
           git merge --allow-unrelated-histories submit/main
 
           gh pr create \
