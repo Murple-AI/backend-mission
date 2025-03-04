@@ -63,7 +63,7 @@ jobs:
           git fetch submit
           git config --global user.email "${{ env.PR_AUTHOR_EMAIL}}"
           git config --global user.name "${{ env.PR_AUTHOR }}"
-          git merge --allow-unrelated-histories submit/main
+          git merge submit/main
 
           gh pr create \
             --repo Murple-AI/backend-mission-submit \
