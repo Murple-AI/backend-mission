@@ -82,10 +82,9 @@ jobs:
           # permissions 설정을 확인하고, 권한이 없는 경우에는 토큰을 확인
           
           gh pr edit ${{ env.PR_NUMBER }} --base temp-branch
-          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed]" --body " " --base temp-branch
-          git reset --hard origin/main
-          git push origin --force
+          gh pr edit ${{ env.PR_NUMBER }} --title "[Closed]" --body " "
           gh pr edit ${{ env.PR_NUMBER }} --base main
+          git reset --hard origin/main
           gh pr close ${{ env.PR_NUMBER }} --delete-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
