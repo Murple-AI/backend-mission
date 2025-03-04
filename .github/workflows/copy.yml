@@ -49,14 +49,12 @@ jobs:
           git checkout -b $NEW_BRANCH
 
           git remote add submit https://x-access-token:${{ secrets.REVIEW_REPO_PAT }}@github.com/Murple-AI/backend-mission-submit.git
-          git fetch submit
-          git rebase submit/main
 
           git config --global user.email "${{ env.PR_AUTHOR_EMAIL}}"
           git config --global user.name "${{ env.PR_AUTHOR }}"
 
           # 원본 PR 브랜치 내용을 private repo로 push
-          git push -u submit/$NEW_BRANCH $NEW_BRANCH --force
+          git push -u submit $NEW_BRANCH 
         env:
           GITHUB_TOKEN: ${{ secrets.REVIEW_REPO_PAT }}
 
@@ -67,7 +65,7 @@ jobs:
           gh pr create \
             --repo Murple-AI/backend-mission-submit \
             --base main \
-            --head {{ env.$NEW_BRANCH }} \
+            --head $NEW_BRANCH \
             --title "[Review] ${{ env.PR_AUTHOR }} / ${{ env.PR_AUTHOR_EMAIL }} - ${{ env.PR_TITLE }}" \
             --body-file <(echo "${{ github.event.pull_request.body }} (Original PR: #${{ env.PR_NUMBER }})")
         env:
