@@ -12,7 +12,7 @@ data class UserEntity(
     val name: String,
     val email: String,
     val gender: GenderType? = null,
-    val age: Int,
+    val age: Int? = null,
     val isDeleted: Boolean = false,
     val updatedAt: Instant = Instant.now(),
     val createdAt: Instant = Instant.now()

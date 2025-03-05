@@ -1,10 +1,10 @@
 package app.boboc.chatserver.data
 
 enum class CountryCode(val countryNumber: String) {
-    US("1"),
-    KR("82"),
-    JP("81"),
-    CN("86");
+    US("+1"),
+    KR("+82"),
+    JP("+81"),
+    CN("+86");
 
     companion object {
         fun findByCountryNumber(countryNumber: String): CountryCode? {
@@ -16,6 +16,12 @@ enum class CountryCode(val countryNumber: String) {
                 CountryCode.entries.find {
                     it.name == this
                 }
+            }
+        }
+
+        fun getCountryCodeFromPhoneNumber(phoneNumber: String): CountryCode? {
+            return CountryCode.entries.find {
+                phoneNumber.startsWith(it.countryNumber)
             }
         }
     }
