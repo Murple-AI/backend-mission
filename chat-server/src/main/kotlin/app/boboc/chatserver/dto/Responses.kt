@@ -13,6 +13,28 @@ class Responses {
         val email: String,
         val age: Int? = null,
         val gender: GenderType? = null,
+    ){
+        companion object {
+            fun from(
+                user: UserEntity,
+            ): User {
+                return User(
+                    id = user.id!!,
+                    name = user.name,
+                    email = user.email,
+                    age = user.age,
+                    gender = user.gender,
+                )
+            }
+        }
+    }
+
+    data class UserDetail(
+        val id: Long,
+        val name: String,
+        val email: String,
+        val age: Int? = null,
+        val gender: GenderType? = null,
         val addresses: List<Address>,
         val phoneNumbers: List<PhoneNumber>
     ) {
@@ -21,8 +43,8 @@ class Responses {
                 user: UserEntity,
                 addresses: List<UserAddressEntity> = listOf(),
                 phoneNumbers: List<UserPhoneNumberEntity> = listOf()
-            ): User {
-                return User(
+            ): UserDetail {
+                return UserDetail(
                     id = user.id!!,
                     name = user.name,
                     email = user.email,

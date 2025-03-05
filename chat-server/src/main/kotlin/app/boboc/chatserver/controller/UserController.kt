@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private val userService: UserService,
 ) {
+    @GetMapping()
+    suspend fun getUsers(): List<Responses.User> = userService.getUsers()
+
     @GetMapping("/{userId}")
-    suspend fun getUser(@PathVariable userId: Long): Responses.User = userService.getUser(userId)
+    suspend fun getUser(@PathVariable userId: Long): Responses.UserDetail = userService.getUser(userId)
 
     @PostMapping
     suspend fun createUser(@RequestBody @Valid req: Requests.User) = userService.registerUser(req)

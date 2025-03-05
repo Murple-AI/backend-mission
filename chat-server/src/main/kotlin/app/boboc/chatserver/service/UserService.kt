@@ -15,9 +15,17 @@ class UserService(
     private val userAddressRepository: UserAddressRepository,
     private val userPhoneNumberRepository: UserPhoneNumberRepository
 ) {
-    suspend fun getUser(userId: Long): Responses.User {
+    suspend fun getUsers(): List<Responses.User> {
+        return userRepository.findAllByDeletedFalseOrderByCreatedAt().map {
+            Responses.User.from(it)
+        }
+    }
+
+    suspend fun getUser(userId: Long): Responses.UserDetail {
         return userRepository.findById(userId)?.run {
-            Responses.User.from(
+            if(this.isDeleted == true) throw RuntimeException("User not found")
+
+            Responses.UserDetail.from(
                 user = this,
                 addresses = userAddressRepository.findByUserIdAndDeletedFalseOrderById(userId),
                 phoneNumbers = userPhoneNumberRepository.findByUserIdAndDeletedFalseOrderById(userId)

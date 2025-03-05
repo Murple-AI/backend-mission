@@ -5,5 +5,6 @@ import org.springframework.data.repository.kotlin.CoroutineCrudRepository
 
 interface UserAddressRepository: CoroutineCrudRepository<UserAddressEntity, Long> {
     suspend fun findByUserIdAndDeletedFalseOrderById(userId: Long): List<UserAddressEntity>
-
+    suspend fun findByIdAndUserIdAndDeletedFalse(userId: Long, id: Long): UserAddressEntity?
+    suspend fun countByUserIdAndDeletedFalse(userId: Long): Long
 }
