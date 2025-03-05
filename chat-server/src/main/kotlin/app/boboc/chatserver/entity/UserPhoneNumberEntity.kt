@@ -12,6 +12,7 @@ data class UserPhoneNumberEntity(
     val label: String,
     val countryCode: String,
     val phoneNumber: String,
+    val isDeleted: Boolean = false,
     val updatedAt: Instant = Instant.now(),
     val createdAt: Instant = Instant.now()
 )
