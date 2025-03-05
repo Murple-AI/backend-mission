@@ -2,17 +2,11 @@
 
 spring:
   datasource:
-    hikari:
-      jdbc-url: ${SPRING_DATASOURCE_HIKARI_JDBC_URL:jdbc:postgresql://localhost:5432/murple}
-      username: ${SPRING_DATASOURCE_HIKARI_USERNAME:myuser}
-      password: ${SPRING_DATASOURCE_HIKARI_PASSWORD:mypassword}
-      driver-class-name: org.postgresql.Driver
-      pool-name: hikari-cp
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-      max-lifetime: 1200000
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/murple}
+    username: ${SPRING_DATASOURCE_USERNAME:myuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:mypassword}
+    driver-class-name: org.postgresql.Driver
+
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
