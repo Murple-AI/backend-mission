@@ -29,9 +29,4 @@ class PhoneEntity(
     @Column(name = "is_verified", nullable = false)
     val isVerified: Boolean = false,
 
-    @Column(name = "created_at", nullable = false)
-    val createdAt: ZonedDateTime = ZonedDateTime.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    val updatedAt: ZonedDateTime = ZonedDateTime.now()
 )

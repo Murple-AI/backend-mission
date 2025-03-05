@@ -23,10 +23,5 @@ class AddressEntity(
     @Column(name = "address", nullable = false, length = 1024)
     val address: String,
 
-    @Column(name = "created_at", nullable = false)
-    val createdAt: ZonedDateTime = ZonedDateTime.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    val updatedAt: ZonedDateTime = ZonedDateTime.now()
 )
 

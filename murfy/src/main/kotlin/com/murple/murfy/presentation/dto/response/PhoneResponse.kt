@@ -1,6 +1,6 @@
 package com.murple.murfy.presentation.dto.response
 
-import java.time.ZonedDateTime
+import com.murple.murfy.domain.model.Phone
 
 
 data class PhoneResponse(
@@ -9,6 +9,16 @@ data class PhoneResponse(
     val number: String,
     val countryCode: String,
     val isVerified: Boolean,
-    val createdAt: ZonedDateTime,
-    val updatedAt: ZonedDateTime? = null
-)
+) {
+    companion object {
+        fun from(model: Phone): PhoneResponse {
+            return PhoneResponse(
+                id = model.id!!,
+                label = model.label.toString(),
+                number = model.number,
+                countryCode = model.countryCode,
+                isVerified = model.isVerified,
+            )
+        }
+    }
+}
