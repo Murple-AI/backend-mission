@@ -15,7 +15,7 @@ class UserAddressService(
     suspend fun getUserAddresses(userId: Long): List<Responses.Address> {
         if (!userRepository.existsByIdAndDeletedFalse(userId)) throw RuntimeException("User not found")
 
-        return userAddressRepository.findByUserIdAndDeletedFalseOrderById(userId)
+        return userAddressRepository.findAllByUserIdAndDeletedFalseOrderById(userId)
             .map {
                 Responses.Address.from(it)
             }

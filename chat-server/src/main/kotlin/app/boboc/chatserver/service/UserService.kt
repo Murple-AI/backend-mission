@@ -23,12 +23,12 @@ class UserService(
 
     suspend fun getUser(userId: Long): Responses.UserDetail {
         return userRepository.findById(userId)?.run {
-            if(this.isDeleted == true) throw RuntimeException("User not found")
+            if(this.isDeleted) throw RuntimeException("User not found")
 
             Responses.UserDetail.from(
                 user = this,
-                addresses = userAddressRepository.findByUserIdAndDeletedFalseOrderById(userId),
-                phoneNumbers = userPhoneNumberRepository.findByUserIdAndDeletedFalseOrderById(userId)
+                addresses = userAddressRepository.findAllByUserIdAndDeletedFalseOrderById(userId),
+                phoneNumbers = userPhoneNumberRepository.findAllByUserIdAndDeletedFalseOrderById(userId)
             )
         } ?: throw RuntimeException("User not found")
     }
