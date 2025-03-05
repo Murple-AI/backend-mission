@@ -1,5 +1,6 @@
 package app.boboc.chatserver.entity
 
+import app.boboc.chatserver.data.CountryCode
 import org.springframework.data.annotation.Id
 import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
@@ -10,8 +11,9 @@ data class UserPhoneNumberEntity(
     val id: Long? = null,
     val userId: Long,
     val label: String,
-    val countryCode: String,
+    val countryCode: CountryCode,
     val phoneNumber: String,
+    val isVerified: Boolean = false,
     val isDeleted: Boolean = false,
     val updatedAt: Instant = Instant.now(),
     val createdAt: Instant = Instant.now()
