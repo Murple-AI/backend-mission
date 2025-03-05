@@ -7,7 +7,7 @@ class Address(
 ) {
     init {
         require(address.isNotBlank() && address.length <= 1024) {
-            "주소는 비어있지 않아야 하며 최대 1024자여야 합니다"
+            "The address must not be empty and must be at most 1024 characters long."
         }
     }
 }
