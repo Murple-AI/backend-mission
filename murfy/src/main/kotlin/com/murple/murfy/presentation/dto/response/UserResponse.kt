@@ -1,5 +1,6 @@
 package com.murple.murfy.presentation.dto.response
 
+import com.murple.murfy.domain.model.User
 import java.time.ZonedDateTime
 
 
@@ -13,4 +14,25 @@ data class UserResponse(
     val addresses: List<AddressResponse> = emptyList(),
     val createdAt: ZonedDateTime,
     val updatedAt: ZonedDateTime
+) {
+    companion object {
+        fun from(model: User): UserResponse {
+            return UserResponse(
+                id = model.id!!,
+                name = model.name,
+                age = model.age,
+                gender = model.gender.toString(),
+                email = model.email,
+                phones = model.phones.map {x -> PhoneResponse.from(x) },
+                addresses = model.addresses.map { x -> AddressResponse.from(x) },
+                createdAt = model.createdAt,
+                updatedAt = model.updatedAt
+            )
+        }
+    }
+}
+
+data class UserDeleteResponse(
+    val deleted: Boolean,
+    val id: Long
 )
