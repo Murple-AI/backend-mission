@@ -1,4 +1,4 @@
-package com.murple.murfy.presentation.exception
+package com.murple.murfy.common.exception
 
 
 import mu.KotlinLogging
