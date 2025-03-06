@@ -21,17 +21,17 @@ class UserEntity(
     val id: Long? = null,
 
     @Column(nullable = false, length = 1024)
-    val name: String,
+    var name: String,
 
     @Column
-    val age: Int? = null,
+    var age: Int? = null,
 
     @Column
     @Convert(converter = GenderConverter::class)
-    val gender: Gender? = null,
+    var gender: Gender? = null,
 
     @Column(length = 1024)
-    val email: String? = null,
+    var email: String? = null,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     val phones: MutableList<PhoneEntity> = mutableListOf(),
@@ -43,5 +43,9 @@ class UserEntity(
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
     @Column(name = "updated_at", nullable = false)
-    val updatedAt: ZonedDateTime = ZonedDateTime.now()
-)
+    var updatedAt: ZonedDateTime = ZonedDateTime.now()
+) {
+    fun updateBasicInfo(name: String, age: Int?, gender: Gender?, email: String?) {
+        this.name = name
+    }
+}

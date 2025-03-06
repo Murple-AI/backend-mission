@@ -32,7 +32,7 @@ class AddressEntity(
     @Column(name = "full_address", length = 1024)
     val fullAddress: String
 ) {
-    constructor(id: Long?, user: UserEntity?, label: Label, street: String, city: String, zipCode: String) : this(
+    constructor(id: Long?= null, user: UserEntity?, label: Label, street: String, city: String, zipCode: String) : this(
         id = id,
         user = user,
         label = label,

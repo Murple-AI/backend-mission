@@ -19,7 +19,7 @@ class PhoneEntity(
     @Convert(converter = LabelConverter::class)
     val label: Label,
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "number", nullable = false, unique = true)
     val number: String,
 
     @Column(name = "country_code", nullable = false, length = 2)
