@@ -1,5 +1,5 @@
 
-create table user_info
+create table if not exists user_info
 (
     id         bigserial
         constraint user_info_pk
@@ -13,10 +13,10 @@ create table user_info
     created_at timestamp(3) default CURRENT_TIMESTAMP(3)
 );
 
-create index user_info_name_index
+create index if not exists user_info_name_index
     on user_info (name);
 
-create table user_address
+create table if not exists user_address
 (
     id         bigserial
         constraint user_address_pk
@@ -30,11 +30,11 @@ create table user_address
     created_at timestamp(3) default CURRENT_TIMESTAMP(3)
 );
 
-create index user_address_user_id_index
+create index if not exists user_address_user_id_index
     on user_address (user_id);
 
 
-create table user_phone_number
+create table if not exists user_phone_number
 (
     id           bigserial
         constraint user_phone_number_pk
@@ -51,6 +51,6 @@ create table user_phone_number
     created_at   timestamp(3) default CURRENT_TIMESTAMP(3) not null
 );
 
-create index user_phone_number_user_id_index
+create index if not exists user_phone_number_user_id_index
     on user_phone_number (user_id);
 
