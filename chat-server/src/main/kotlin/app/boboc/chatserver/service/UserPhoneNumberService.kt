@@ -14,22 +14,22 @@ class UserPhoneNumberService(
     private val userPhoneNumberRepository: UserPhoneNumberRepository
 ) {
     suspend fun getPhoneNumbers(userId: Long): List<Responses.PhoneNumber> {
-        if (!userRepository.existsByIdAndDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
 
-        return userPhoneNumberRepository.findAllByUserIdAndDeletedFalseOrderById(userId)
+        return userPhoneNumberRepository.findAllByUserIdAndIsDeletedFalseOrderById(userId)
             .map { Responses.PhoneNumber.from(it) }
     }
 
     suspend fun getPhoneNumber(userId: Long, phoneNumberId: Long): Responses.PhoneNumber {
-        if (!userRepository.existsByIdAndDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
 
-        return userPhoneNumberRepository.findByIdAndUserIdAndDeletedFalse(userId, phoneNumberId)
+        return userPhoneNumberRepository.findByIdAndUserIdAndIsDeletedFalse(userId, phoneNumberId)
             ?.run { Responses.PhoneNumber.from(this) } ?: throw RuntimeException("PhoneNumber not found")
     }
 
     suspend fun registerUserPhoneNumber(userId: Long, req: Requests.PhoneNumber) {
-        if (!userRepository.existsByIdAndDeletedFalse(userId)) throw RuntimeException("User not found")
-        if (userPhoneNumberRepository.countByUserIdAndDeletedFalse(userId) > 8) throw RuntimeException("Exceeded maximum")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (userPhoneNumberRepository.countByUserIdAndIsDeletedFalse(userId) > 8) throw RuntimeException("Exceeded maximum")
 
         userPhoneNumberRepository.save(
             UserPhoneNumberEntity(
@@ -43,9 +43,9 @@ class UserPhoneNumberService(
     }
 
     suspend fun updateUserPhoneNumber(userId: Long, phoneNumberId: Long, req: Requests.PhoneNumber) {
-        if (!userRepository.existsByIdAndDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
 
-        userPhoneNumberRepository.findByIdAndUserIdAndDeletedFalse(userId, phoneNumberId)?.also {
+        userPhoneNumberRepository.findByIdAndUserIdAndIsDeletedFalse(userId, phoneNumberId)?.also {
             userPhoneNumberRepository.save(
                 it.copy(
                     phoneNumber = req.phoneNumber,
@@ -58,9 +58,9 @@ class UserPhoneNumberService(
     }
 
     suspend fun deleteUserPhoneNumber(userId: Long, phoneNumberId: Long) {
-        if (!userRepository.existsByIdAndDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
 
-        userPhoneNumberRepository.findByIdAndUserIdAndDeletedFalse(userId, phoneNumberId)?.also {
+        userPhoneNumberRepository.findByIdAndUserIdAndIsDeletedFalse(userId, phoneNumberId)?.also {
             userPhoneNumberRepository.save(it.copy(isDeleted = true))
         } ?: throw RuntimeException("Phone number not found")
     }
