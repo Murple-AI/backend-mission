@@ -4,7 +4,7 @@ import com.murple.murfy.domain.enums.Gender
 import java.time.ZonedDateTime
 
 
-class User(
+data class User(
     val id: Long? = null,
     val name: String,
     val age: Int? = null,

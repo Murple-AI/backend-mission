@@ -1,8 +1,13 @@
 package com.murple.murfy.presentation
 
 import com.murple.murfy.application.service.UserService
+import com.murple.murfy.presentation.dto.request.AddressRequest
+import com.murple.murfy.presentation.dto.request.PhoneRequest
+import com.murple.murfy.presentation.dto.request.UserBasicInfoRequest
 import com.murple.murfy.presentation.dto.request.UserRequest
-import com.murple.murfy.presentation.dto.response.UserDeleteResponse
+import com.murple.murfy.presentation.dto.response.AddressResponse
+import com.murple.murfy.presentation.dto.response.PhoneResponse
+import com.murple.murfy.presentation.dto.response.UserBasicInfoResponse
 import com.murple.murfy.presentation.dto.response.UserResponse
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/users")
 class UserController(private val userService: UserService) {
 
+    // 사용자 ------------------
     @PostMapping
     fun createUser(@RequestBody request: UserRequest): ResponseEntity<UserResponse> {
         val createdUser = userService.createUser(request.toServiceDto())
@@ -35,22 +41,86 @@ class UserController(private val userService: UserService) {
     }
 
 
-    @PutMapping("/{id}")
-    fun updateUser(
+    @PutMapping("/{id}/info")
+    fun updateUserInfo(
         @PathVariable id: Long,
-        @RequestBody request: UserRequest
-    ): ResponseEntity<UserResponse> {
-        val updatedUser = userService.updateUser(id, request.toServiceDto())
-        val userResponse = UserResponse.from(updatedUser)
+        @RequestBody request: UserBasicInfoRequest
+    ): ResponseEntity<UserBasicInfoResponse> {
+        val updatedUser = userService.updateUserInfo(id, request.toServiceDto())
+        val userResponse = UserBasicInfoResponse.from(updatedUser)
         return ResponseEntity.ok(userResponse)
     }
 
     @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: Long): ResponseEntity<UserDeleteResponse> {
+    fun deleteAllUserInfo(@PathVariable id: Long): ResponseEntity<Void> {
         userService.deleteUser(id)
-        val deleteResponse = UserDeleteResponse(deleted = true, id = id )
-        return ResponseEntity.ok(deleteResponse)
+        return ResponseEntity.noContent().build()
     }
 
+
+    // phone -----------------------------
+    @PostMapping("/{id}/phones")
+    fun addUserPhone(
+        @PathVariable id: Long,
+        @RequestBody request: PhoneRequest
+    ): ResponseEntity<PhoneResponse> {
+        val createdPhone = userService.addUserPhone(id, request.toServiceDto())
+        val phoneResponse = PhoneResponse.from(createdPhone)
+        return ResponseEntity.status(HttpStatus.CREATED).body(phoneResponse)
+    }
+
+    @DeleteMapping("/{id}/phones/{phoneId}")
+    fun deleteUserPhone(
+        @PathVariable id: Long,
+        @PathVariable phoneId: Long
+    ): ResponseEntity<Void> {
+        userService.deleteUserPhone(id, phoneId)
+        return ResponseEntity.noContent().build()
+    }
+
+
+    @PutMapping("/{id}/phones/{phoneId}")
+    fun updateUserPhone(
+        @PathVariable id: Long,
+        @PathVariable phoneId: Long,
+        @RequestBody request: PhoneRequest
+    ): ResponseEntity<PhoneResponse> {
+        val updatedPhone = userService.updateUserPhone(id, phoneId, request.toServiceDto())
+        val phoneResponse = PhoneResponse.from(updatedPhone)
+        return ResponseEntity.ok(phoneResponse)
+    }
+
+    // address ------------------------
+    @PostMapping("/{id}/addresses")
+    fun addUserAddress(
+        @PathVariable id: Long,
+        @RequestBody request: AddressRequest
+    ): ResponseEntity<AddressResponse> {
+        val createdAddress = userService.addUserAddress(id, request.toServiceDto())
+        val addressResponse = AddressResponse.from(createdAddress)
+        return ResponseEntity.status(HttpStatus.CREATED).body(addressResponse)
+    }
+
+
+    @DeleteMapping("/{id}/addresses/{addressId}")
+    fun deleteUserAddress(
+        @PathVariable id: Long,
+        @PathVariable addressId: Long
+    ): ResponseEntity<Void> {
+        userService.deleteUserAddress(id, addressId)
+        return ResponseEntity.noContent().build()
+    }
+
+
+    @PutMapping("/{id}/addresses/{addressId}")
+    fun updateUserAddress(
+        @PathVariable id: Long,
+        @PathVariable addressId: Long,
+        @RequestBody request: AddressRequest
+    ): ResponseEntity<AddressResponse> {
+        val updatedAddress = userService.updateUserAddress(id, addressId, request.toServiceDto())
+        val addressResponse = AddressResponse.from(updatedAddress)
+        return ResponseEntity.ok(addressResponse)
+    }
 
 }
