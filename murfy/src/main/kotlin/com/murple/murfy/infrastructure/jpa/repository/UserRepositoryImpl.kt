@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class UserRepositoryImpl(
     private val userJpaRepository: UserJpaRepository
-): UserRepository {
+) : UserRepository {
 
     @Transactional
     override fun save(user: User): User {
@@ -27,25 +27,7 @@ class UserRepositoryImpl(
         return userJpaRepository.findById(id).map { toUser(it) }.orElse(null)
     }
 
-    @Transactional(readOnly = true)
-    override fun findAll(): List<User> {
-        return userJpaRepository.findAll().map { toUser(it) }
-    }
 
-    @Transactional
-    override fun update(user: User): User {
-        val existingEntity = userJpaRepository.findById(user.id!!)
-            .orElseThrow { NoSuchElementException("User not found with id: ${user.id}") }
-
-        val updatedEntity = toUserEntity(user).apply {
-            // 기존 연관관계 제거 및 새로운 연관관계 설정
-            phones.forEach { it.user = this }
-            addresses.forEach { it.user = this }
-        }
-
-        val savedEntity = userJpaRepository.save(updatedEntity)
-        return toUser(savedEntity)
-    }
 
     @Transactional
     override fun delete(id: Long) {
@@ -91,7 +73,9 @@ class UserRepositoryImpl(
                 id = address.id,
                 user = userEntity,
                 label = address.label,
-                address = address.address
+                street = address.street,
+                city = address.city,
+                zipCode = address.zipCode
             )
         }.toMutableList()
 
@@ -121,7 +105,9 @@ class UserRepositoryImpl(
                 Address(
                     id = address.id,
                     label = address.label,
-                    address = address.address
+                    street = address.street,
+                    city = address.city,
+                    zipCode = address.zipCode
                 )
             }.toMutableList(),
             createdAt = entity.createdAt,
