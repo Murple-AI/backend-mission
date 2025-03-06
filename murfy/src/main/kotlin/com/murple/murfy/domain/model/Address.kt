@@ -1,13 +1,22 @@
 package com.murple.murfy.domain.model
 
+import com.murple.murfy.domain.enums.Label
+
 class Address(
     val id: Long? = null,
     val label: Label,
-    val address: String
+    val street: String,
+    val city: String,
+    val zipCode: String
 ) {
     init {
-        require(address.isNotBlank() && address.length <= 1024) {
-            "The address must not be empty and must be at most 1024 characters long."
+        val fullAddress = "$street, $city, $zipCode"
+        require(fullAddress.length <= 1024) {
+            "The full address must be at most 1024 characters long."
         }
+    }
+
+    fun getFullAddress(): String {
+        return "$street, $city, $zipCode"
     }
 }

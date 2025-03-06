@@ -5,12 +5,16 @@ import com.murple.murfy.application.dto.AddressDto
 
 data class AddressRequest(
     val label: String,
-    val address: String
+    val street: String,
+    val city: String,
+    val zipcode: String
 ) {
     fun toServiceDto(): AddressDto {
         return AddressDto(
             label = label,
-            address = address
+            street = street,
+            city = city,
+            zipcode = zipcode
         )
     }
 }
