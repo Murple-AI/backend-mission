@@ -32,7 +32,27 @@ data class UserResponse(
     }
 }
 
-data class UserDeleteResponse(
-    val deleted: Boolean,
-    val id: Long
-)
+data class UserBasicInfoResponse(
+    val id: Long,
+    val name: String,
+    val age: Int? = null,
+    val gender: String? = null,
+    val email: String? = null,
+    val createdAt: ZonedDateTime,
+    val updatedAt: ZonedDateTime
+) {
+    companion object {
+        fun from(model: User): UserBasicInfoResponse {
+            return UserBasicInfoResponse(
+                id = model.id!!,
+                name = model.name,
+                age = model.age,
+                gender = model.gender?.toString(),
+                email = model.email,
+                createdAt = model.createdAt,
+                updatedAt = model.updatedAt
+            )
+        }
+    }
+}
+

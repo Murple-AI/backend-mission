@@ -24,3 +24,18 @@ data class UserRequest(
 }
 
 
+data class UserBasicInfoRequest(
+    val name: String,
+    val age: Int? = null,
+    val gender: String? = null,
+    val email: String? = null,
+) {
+    fun toServiceDto(): UserDto {
+        return UserDto(
+            name  = name,
+            age = age,
+            gender = gender,
+            email = email,
+        )
+    }
+}
