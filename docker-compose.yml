@@ -1,0 +1,27 @@
+services:
+  chat-server:
+    build:
+      context: ./chat-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  chat-client:
+    build:
+      context: ./chat-client
+      args:
+        CHAT_SERVER: ws://localhost:8080
+    ports:
+      - "3000:80"
+    depends_on:
+      - chat-server
+
+  postgres:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mission_db
