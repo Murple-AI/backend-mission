@@ -1,5 +1,6 @@
 package com.murple.murfy.domain.model
 
+import com.murple.murfy.domain.enums.Gender
 import java.time.ZonedDateTime
 
 

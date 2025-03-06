@@ -1,6 +1,6 @@
 package com.murple.murfy.infrastructure.jpa.entity
 
-import com.murple.murfy.domain.model.Gender
+import com.murple.murfy.domain.enums.Gender
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Convert

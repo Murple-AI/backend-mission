@@ -2,6 +2,7 @@ package com.murple.murfy.domain.model
 
 
 import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.murple.murfy.domain.enums.Label
 
 class Phone(
     val id: Long? = null,

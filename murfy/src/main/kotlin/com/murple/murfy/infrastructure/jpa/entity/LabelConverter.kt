@@ -1,7 +1,7 @@
 package com.murple.murfy.infrastructure.jpa.entity
 
 
-import com.murple.murfy.domain.model.Label
+import com.murple.murfy.domain.enums.Label
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 

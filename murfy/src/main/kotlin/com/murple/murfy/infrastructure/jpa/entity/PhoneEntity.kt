@@ -1,9 +1,8 @@
 package com.murple.murfy.infrastructure.jpa.entity
 
 
-import com.murple.murfy.domain.model.Label
+import com.murple.murfy.domain.enums.Label
 import jakarta.persistence.*
-import java.time.ZonedDateTime
 
 @Entity
 @Table(name = "phone_numbers")
@@ -29,4 +28,4 @@ class PhoneEntity(
     @Column(name = "is_verified", nullable = false)
     val isVerified: Boolean = false,
 
-)
+    )

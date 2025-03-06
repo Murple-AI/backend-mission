@@ -21,7 +21,7 @@ data class UserResponse(
                 id = model.id!!,
                 name = model.name,
                 age = model.age,
-                gender = model.gender.toString(),
+                gender = model.gender?.toString(),
                 email = model.email,
                 phones = model.phones.map {x -> PhoneResponse.from(x) },
                 addresses = model.addresses.map { x -> AddressResponse.from(x) },
