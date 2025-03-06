@@ -25,3 +25,5 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: mission_db
+    volumes:
+      - "./chat-server/src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/init.sql"
