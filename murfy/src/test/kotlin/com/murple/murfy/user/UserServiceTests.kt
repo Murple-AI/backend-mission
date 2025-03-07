@@ -12,6 +12,7 @@ import com.murple.murfy.domain.user.enums.Label
 import com.murple.murfy.domain.user.model.Address
 import com.murple.murfy.domain.user.model.Phone
 import com.murple.murfy.domain.user.model.UserAggregate
+import com.murple.murfy.domain.user.model.UserBasic
 import com.murple.murfy.domain.user.repository.UserRepository
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -618,8 +619,8 @@ class UserServiceTest {
             // Given
             val name = "John"
             val users = listOf(
-                UserAggregate(id = 1L, name = "John Doe", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now()),
-                UserAggregate(id = 2L, name = "John Smith", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now())
+                UserBasic(id = 1L, name = "John Doe", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now()),
+                UserBasic(id = 2L, name = "John Smith", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now())
             )
 
             every { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) } returns users
@@ -640,8 +641,8 @@ class UserServiceTest {
             // Given
             val names = listOf("John", "Jane")
             val users = listOf(
-                UserAggregate(id = 1L, name = "John Doe", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now()),
-                UserAggregate(id = 2L, name = "Jane Smith", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now())
+                UserBasic(id = 1L, name = "John Doe", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now()),
+                UserBasic(id = 2L, name = "Jane Smith", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now())
             )
 
             every { userRepository.findByNamesLimitedByCreatedAt(names) } returns users
