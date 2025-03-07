@@ -3,6 +3,7 @@ package com.murple.murfy.infrastructure.user.jpa.repository
 import com.murple.murfy.domain.user.model.Address
 import com.murple.murfy.domain.user.model.Phone
 import com.murple.murfy.domain.user.model.UserAggregate
+import com.murple.murfy.domain.user.model.UserBasic
 import com.murple.murfy.domain.user.repository.UserRepository
 import com.murple.murfy.infrastructure.user.jpa.entiy.AddressEntity
 import com.murple.murfy.infrastructure.user.jpa.entiy.PhoneEntity
@@ -111,13 +112,26 @@ class UserRepositoryImpl(
         )
     }
 
-    @Transactional(readOnly = true)
-    override fun findByNamesLimitedByCreatedAt(names: List<String>): List<UserAggregate> {
-        return userJpaRepository.findByNamesLimitedByCreatedAt(names).map { x -> toUser(x) }
+
+    private fun toUserBasic(entity: UserEntity): UserBasic {
+        return UserBasic(
+            id = entity.id,
+            name = entity.name,
+            age = entity.age,
+            gender = entity.gender,
+            email = entity.email,
+            createdAt = entity.createdAt,
+            updatedAt = entity.updatedAt
+        )
     }
 
     @Transactional(readOnly = true)
-    override fun findTop5ByNameOrderByCreatedAtAsc(name: String): List<UserAggregate> {
-        return userJpaRepository.findTop5ByNameOrderByCreatedAtAsc(name).map { toUser(it) }
+    override fun findByNamesLimitedByCreatedAt(names: List<String>): List<UserBasic> {
+        return userJpaRepository.findByNamesLimitedByCreatedAt(names).map { x -> toUserBasic(x) }
+    }
+
+    @Transactional(readOnly = true)
+    override fun findTop5ByNameOrderByCreatedAtAsc(name: String): List<UserBasic> {
+        return userJpaRepository.findTop5ByNameOrderByCreatedAtAsc(name).map { toUserBasic(it) }
     }
 }

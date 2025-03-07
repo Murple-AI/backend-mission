@@ -3,7 +3,7 @@ package com.murple.murfy.application.chat.service
 import com.murple.murfy.application.user.service.UserService
 import com.murple.murfy.domain.chat.model.MessageAggregate
 import com.murple.murfy.domain.chat.model.MessageType
-import com.murple.murfy.domain.user.model.UserAggregate
+import com.murple.murfy.domain.user.model.UserBasic
 import org.springframework.stereotype.Service
 
 
@@ -52,7 +52,7 @@ class ChatService(
         }
     }
 
-    private fun findMentionedUsers(messageText: String): List<UserAggregate> {
+    private fun findMentionedUsers(messageText: String): List<UserBasic> {
         val userNameList = extractUserNamesFromMessage(messageText)
         if (userNameList.isEmpty()) return emptyList()
 
@@ -70,7 +70,7 @@ class ChatService(
             .toList()
     }
 
-    private fun formatUserInfo(users: List<UserAggregate>): String {
+    private fun formatUserInfo(users: List<UserBasic>): String {
         return users.joinToString(", ") { "${it.name}(ID: ${it.id})" }
     }
 }

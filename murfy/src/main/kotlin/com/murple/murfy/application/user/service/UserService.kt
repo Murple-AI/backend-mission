@@ -9,6 +9,7 @@ import com.murple.murfy.domain.user.enums.Gender
 import com.murple.murfy.domain.user.enums.Label
 import com.murple.murfy.domain.user.model.Phone
 import com.murple.murfy.domain.user.model.UserAggregate
+import com.murple.murfy.domain.user.model.UserBasic
 import com.murple.murfy.domain.user.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -137,12 +138,12 @@ class UserService(
 
 
     @Transactional(readOnly = true)
-    fun findTopUsersByName(name: String): List<UserAggregate> {
+    fun findTopUsersByName(name: String): List<UserBasic> {
         return userRepository.findTop5ByNameOrderByCreatedAtAsc(name)
     }
 
     @Transactional(readOnly = true)
-    fun findTopUsersByNameList(name: List<String>): List<UserAggregate> {
+    fun findTopUsersByNameList(name: List<String>): List<UserBasic> {
         return userRepository.findByNamesLimitedByCreatedAt(name)
     }
 

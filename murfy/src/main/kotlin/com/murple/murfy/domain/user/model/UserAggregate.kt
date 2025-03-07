@@ -28,3 +28,25 @@ data class UserAggregate(
         return emailRegex.matches(email)
     }
 }
+
+
+class UserBasic(
+    val id: Long? = null,
+    val name: String,
+    val age: Int? = null,
+    val gender: Gender? = null,
+    val email: String? = null,
+    val createdAt: ZonedDateTime = ZonedDateTime.now(),
+    val updatedAt: ZonedDateTime = ZonedDateTime.now()
+) {
+    init {
+        require(name.isNotBlank() && name.length <= 1024) { "The name must not be empty and must be at most 1024 characters long." }
+        require(age == null || age >= 0) { "Age must be at least 0 or null." }
+        require(email == null || (email.length <= 1024 && isValidEmail(email))) { "Email must be in a valid format and at most 1024 characters long." }
+    }
+
+    private fun isValidEmail(email: String): Boolean {
+        val emailRegex = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}".toRegex()
+        return emailRegex.matches(email)
+    }
+}
