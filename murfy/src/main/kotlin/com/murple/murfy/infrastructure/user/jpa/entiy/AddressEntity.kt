@@ -29,7 +29,7 @@ class AddressEntity(
     val zipCode: String,
 
     // 전체 주소도 저장
-    @Column(name = "full_address", length = 1024)
+    @Column(name = "full_address", length = 1024, unique = true)
     val fullAddress: String
 ) {
     constructor(id: Long?= null, user: UserEntity?, label: Label, street: String, city: String, zipCode: String) : this(

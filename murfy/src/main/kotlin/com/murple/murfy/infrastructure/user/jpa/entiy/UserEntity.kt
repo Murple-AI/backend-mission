@@ -30,7 +30,7 @@ class UserEntity(
     @Convert(converter = GenderConverter::class)
     var gender: Gender? = null,
 
-    @Column(length = 1024)
+    @Column(length = 1024, unique = true)
     var email: String? = null,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
