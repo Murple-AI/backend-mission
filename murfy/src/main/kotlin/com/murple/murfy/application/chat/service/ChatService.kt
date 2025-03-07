@@ -1,61 +1,51 @@
 package com.murple.murfy.application.chat.service
 
+import com.murple.murfy.application.user.service.UserService
 import com.murple.murfy.domain.chat.model.MessageAggregate
 import com.murple.murfy.domain.chat.model.MessageType
 import com.murple.murfy.domain.user.model.UserAggregate
-import com.murple.murfy.domain.user.repository.UserRepository
 import org.springframework.stereotype.Service
 
 
 @Service
 class ChatService(
-    private val userRepository: UserRepository
+    private val userService: UserService
 )  {
 
-     fun processMessage(messageText: String): MessageAggregate {
+     fun sendMessageFromUser(messageText: String): MessageAggregate {
         val mentionedUsers = findMentionedUsers(messageText)
 
         return if (mentionedUsers.isNotEmpty()) {
             // 언급된 사용자가 있으면 PRIVATE 메시지 생성
             val userInfo = formatUserInfo(mentionedUsers)
-            val responseMessage = "찾은 사용자 정보: $userInfo"
+            val responseMessage = "User ids: $userInfo"
 
             MessageAggregate(
                 type = MessageType.PRIVATE,
-                searchedUserIds = responseMessage
+                searchedUserIds = responseMessage,
+                originalMessage = messageText
             )
         } else {
             MessageAggregate(
                 type = MessageType.BROADCAST,
-                searchedUserIds = messageText,
                 originalMessage = messageText
             )
         }
     }
 
-     fun processRedisMessage(redisMessage: String): MessageAggregate {
-        val parts = redisMessage.split("::", limit = 3)
+     fun receiveMessageFromRedis(redisMessage: String): MessageAggregate {
+        val parts = redisMessage.split("::", limit = 2)
         if (parts.size < 2) {
             throw IllegalArgumentException("Not valid Redis message format")
         }
-
         val messageType = parts[0]
 
         return when (messageType) {
             "BROADCAST" -> {
-                val content = if (parts.size >= 3) parts[2] else parts[1]
+                val content = parts[1]
                 MessageAggregate(
                     type = MessageType.BROADCAST,
-                    searchedUserIds = content
-                )
-            }
-            "PRIVATE" -> {
-                val targetSessionId = parts[1]
-                val content = parts[2]
-                MessageAggregate(
-                    type = MessageType.PRIVATE,
-                    targetSessionId = targetSessionId,
-                    searchedUserIds = content
+                    originalMessage = content
                 )
             }
             else -> throw IllegalArgumentException("Not valid message type: $messageType")
@@ -63,9 +53,22 @@ class ChatService(
     }
 
     private fun findMentionedUsers(messageText: String): List<UserAggregate> {
-        return mutableListOf()
+        val userNameList = extractUserNamesFromMessage(messageText)
+        if (userNameList.isEmpty()) return emptyList()
+
+        if (userNameList.size == 1) {
+            return userService.findTopUsersByName(userNameList.first())
+        }
+        return userService.findTopUsersByNameList(userNameList)
     }
 
+    private fun extractUserNamesFromMessage(message: String): List<String> {
+        // @이름 으로 파싱
+        val pattern = Regex("@([\\p{L}\\p{N}_]+)")
+        return pattern.findAll(message)
+            .map { it.groupValues[1] }
+            .toList()
+    }
 
     private fun formatUserInfo(users: List<UserAggregate>): String {
         return users.joinToString(", ") { "${it.name}(ID: ${it.id})" }

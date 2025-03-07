@@ -10,7 +10,7 @@ enum class MessageType {
 data class MessageAggregate(
     val type: MessageType,
     val targetSessionId: String? = null,
-    val searchedUserIds: String,
-    val originalMessage: String? = null
+    val searchedUserIds: String? = null ,
+    val originalMessage: String
 )
 

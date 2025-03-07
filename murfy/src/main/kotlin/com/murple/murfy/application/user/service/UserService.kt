@@ -134,14 +134,16 @@ class UserService(
         userRepository.delete(id)
     }
 
-    @Transactional(readOnly = true)
-    fun findUsersByName(name: String): List<UserAggregate> {
-        return userRepository.findByName(name)
-    }
+
 
     @Transactional(readOnly = true)
     fun findTopUsersByName(name: String): List<UserAggregate> {
-        return userRepository.findByNameOrderByCreatedAtLimit(name)
+        return userRepository.findTop5ByNameOrderByCreatedAtAsc(name)
+    }
+
+    @Transactional(readOnly = true)
+    fun findTopUsersByNameList(name: List<String>): List<UserAggregate> {
+        return userRepository.findByNamesLimitedByCreatedAt(name)
     }
 
     @Transactional
