@@ -18,9 +18,10 @@ spring:
         format_sql: true
     open-in-view: false
 
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: 6379
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
 
 
 

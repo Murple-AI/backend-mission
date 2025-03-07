@@ -8,10 +8,12 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/murple
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=mypassword
+      - REDIS_HOST=redis
     networks:
       - murfy-network
 
@@ -28,10 +30,19 @@ services:
     networks:
       - murfy-network
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - murfy-network
+
 networks:
   murfy-network:
     driver: bridge
 
 volumes:
   postgres-data:
+
+
 

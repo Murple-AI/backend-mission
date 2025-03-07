@@ -30,8 +30,7 @@ dependencies {
     implementation("redis.clients:jedis")
 
     // 전화번호 검증 라이브러리
-    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.31") // 현재 최신 버전
-
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.31")
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
     runtimeOnly("org.postgresql:postgresql")
