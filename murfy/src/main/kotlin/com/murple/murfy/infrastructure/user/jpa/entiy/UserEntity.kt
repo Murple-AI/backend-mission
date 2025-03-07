@@ -44,8 +44,4 @@ class UserEntity(
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: ZonedDateTime = ZonedDateTime.now()
-) {
-    fun updateBasicInfo(name: String, age: Int?, gender: Gender?, email: String?) {
-        this.name = name
-    }
-}
+)

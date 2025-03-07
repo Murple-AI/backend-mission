@@ -28,7 +28,6 @@ class UserRepositoryImpl(
     }
 
 
-
     @Transactional
     override fun delete(id: Long) {
         userJpaRepository.deleteById(id)
@@ -39,10 +38,7 @@ class UserRepositoryImpl(
         return userJpaRepository.findByName(name).map { toUser(it) }
     }
 
-    @Transactional(readOnly = true)
-    override fun findByNameOrderByCreatedAtLimit(name: String): List<UserAggregate> {
-        return userJpaRepository.findTop5ByNameOrderByCreatedAtAsc(name).map { toUser(it) }
-    }
+
 
     private fun toUserEntity(user: UserAggregate): UserEntity {
         val userEntity = UserEntity(
@@ -113,5 +109,15 @@ class UserRepositoryImpl(
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun findByNamesLimitedByCreatedAt(names: List<String>): List<UserAggregate> {
+        return userJpaRepository.findByNamesLimitedByCreatedAt(names).map { x -> toUser(x) }
+    }
+
+    @Transactional(readOnly = true)
+    override fun findTop5ByNameOrderByCreatedAtAsc(name: String): List<UserAggregate> {
+        return userJpaRepository.findTop5ByNameOrderByCreatedAtAsc(name).map { toUser(it) }
     }
 }

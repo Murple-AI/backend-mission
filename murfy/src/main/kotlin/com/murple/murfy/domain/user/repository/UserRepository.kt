@@ -12,5 +12,7 @@ interface UserRepository {
 
     fun findByName(name: String): List<UserAggregate>
 
-    fun findByNameOrderByCreatedAtLimit(name: String): List<UserAggregate>
+    fun findTop5ByNameOrderByCreatedAtAsc(name: String): List<UserAggregate>
+
+    fun findByNamesLimitedByCreatedAt(names: List<String>): List<UserAggregate>
 }
