@@ -3,6 +3,7 @@ package app.boboc.chatserver.service
 import app.boboc.chatserver.dto.Requests
 import app.boboc.chatserver.dto.Responses
 import app.boboc.chatserver.entity.UserAddressEntity
+import app.boboc.chatserver.exceptions.MissionExceptions
 import app.boboc.chatserver.repository.UserAddressRepository
 import app.boboc.chatserver.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -13,7 +14,7 @@ class UserAddressService(
     val userAddressRepository: UserAddressRepository
 ) {
     suspend fun getUserAddresses(userId: Long): List<Responses.Address> {
-        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
 
         return userAddressRepository.findAllByUserIdAndIsDeletedFalseOrderById(userId)
             .map {
@@ -22,15 +23,15 @@ class UserAddressService(
     }
 
     suspend fun getUserAddress(userId: Long, addressId: Long): Responses.Address {
-        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
 
-        return userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(userId, addressId)
-            ?.run { Responses.Address.from(this) } ?: throw RuntimeException("Address not found")
+        return userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(addressId, userId)
+            ?.run { Responses.Address.from(this) } ?: throw MissionExceptions.AddressNotFoundException()
     }
 
     suspend fun registerUserAddress(userId: Long, req: Requests.Address) {
-        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
-        if (userAddressRepository.countByUserIdAndIsDeletedFalse(userId) > 8) throw RuntimeException("Exceeded maximum")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
+        if (userAddressRepository.countByUserIdAndIsDeletedFalse(userId) >= 8) throw MissionExceptions.ExceedLimitAddressException()
 
         userAddressRepository.save(
             UserAddressEntity(
@@ -42,18 +43,18 @@ class UserAddressService(
     }
 
     suspend fun updateUserAddress(userId: Long, addressId: Long, req: Requests.Address) {
-        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
 
-        userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(userId, addressId)?.also {
+        userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(addressId, userId)?.also {
             userAddressRepository.save(it.copy(address = req.address, label = req.label))
-        } ?: throw RuntimeException("Address not found")
+        } ?: throw MissionExceptions.AddressNotFoundException()
     }
 
     suspend fun deleteUserAddress(userId: Long, addressId: Long) {
-        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw RuntimeException("User not found")
+        if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
 
-        userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(userId, addressId)?.also {
+        userAddressRepository.findByIdAndUserIdAndIsDeletedFalse(addressId, userId)?.also {
             userAddressRepository.save(it.copy(isDeleted = true))
-        } ?: throw RuntimeException("Address not found")
+        } ?: throw MissionExceptions.AddressNotFoundException()
     }
 }

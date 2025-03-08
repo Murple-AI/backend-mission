@@ -3,6 +3,7 @@ package app.boboc.chatserver.controller
 import app.boboc.chatserver.dto.Requests
 import app.boboc.chatserver.dto.Responses
 import app.boboc.chatserver.service.UserPhoneNumberService
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -21,14 +22,14 @@ class UserPhoneNumberController(
     @PostMapping
     suspend fun createPhoneNumber(
         @PathVariable userId: Long,
-        @RequestBody req: Requests.PhoneNumber
+        @RequestBody @Valid req: Requests.PhoneNumber
     ) = userPhoneNumberService.registerUserPhoneNumber(userId, req)
 
     @PutMapping("/{phoneNumberId}")
     suspend fun updatePhoneNumber(
         @PathVariable userId: Long,
         @PathVariable phoneNumberId: Long,
-        @RequestBody req: Requests.PhoneNumber
+        @RequestBody @Valid req: Requests.PhoneNumber
     ) = userPhoneNumberService.updateUserPhoneNumber(userId, phoneNumberId, req)
 
     @DeleteMapping("/{phoneNumberId}")

@@ -3,9 +3,11 @@ package app.boboc.chatserver.service
 import app.boboc.chatserver.dto.Requests
 import app.boboc.chatserver.dto.Responses
 import app.boboc.chatserver.entity.UserEntity
+import app.boboc.chatserver.exceptions.MissionExceptions
 import app.boboc.chatserver.repository.UserAddressRepository
 import app.boboc.chatserver.repository.UserPhoneNumberRepository
 import app.boboc.chatserver.repository.UserRepository
+import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -21,16 +23,21 @@ class UserService(
         }
     }
 
+    suspend fun getUsersByName(name: String): List<Responses.User> {
+        return userRepository.findAllByNameAndIsDeletedFalseOrderByCreatedAt(name)
+            .map { Responses.User.from(it) }
+    }
+
     suspend fun getUser(userId: Long): Responses.UserDetail {
         return userRepository.findById(userId)?.run {
-            if(this.isDeleted) throw RuntimeException("User not found")
+            if(this.isDeleted) throw MissionExceptions.UserNotFoundException()
 
             Responses.UserDetail.from(
                 user = this,
                 addresses = userAddressRepository.findAllByUserIdAndIsDeletedFalseOrderById(userId),
                 phoneNumbers = userPhoneNumberRepository.findAllByUserIdAndIsDeletedFalseOrderById(userId)
             )
-        } ?: throw RuntimeException("User not found")
+        } ?: throw MissionExceptions.UserNotFoundException()
     }
 
     @Transactional
@@ -56,7 +63,7 @@ class UserService(
                     gender = request.gender
                 )
             )
-        }
+        } ?: throw MissionExceptions.UserNotFoundException()
     }
 
     suspend fun deleteUser(userId: Long) {
@@ -66,6 +73,6 @@ class UserService(
                     isDeleted = true
                 )
             )
-        }
+        }  ?: throw MissionExceptions.UserNotFoundException()
     }
 }

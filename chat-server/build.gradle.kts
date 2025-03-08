@@ -26,8 +26,8 @@ dependencies {
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("app.boboc:webflux-websocket-coroutine:1.2.0")
-    implementation("app.boboc:webflux-websocket-coroutine-extension:1.2.0")
 
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("org.postgresql:r2dbc-postgresql")
