@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param
 
 interface UserJpaRepository : JpaRepository<UserEntity, Long> {
 
-    fun findByName(name: String): List<UserEntity>
 
     fun findTop5ByNameOrderByCreatedAtAsc(name: String): List<UserEntity>
 

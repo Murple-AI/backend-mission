@@ -196,8 +196,8 @@ class UserServiceTest {
             // Given
             val name = "John"
             val expectedUsers = listOf(
-                UserBasic(id = 1L, name = "John Doe", age = 30, gender = Gender.MALE, email = "john.doe@example.com"),
-                UserBasic(id = 2L, name = "John Smith", age = 25, gender = Gender.MALE, email = "john.smith@example.com")
+                UserBasic(id = 1L, name = "John", age = 30, gender = Gender.MALE, email = "john.doe@example.com"),
+                UserBasic(id = 2L, name = "John", age = 25, gender = Gender.MALE, email = "john.smith@example.com")
             )
 
             every { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) } returns expectedUsers
@@ -208,8 +208,8 @@ class UserServiceTest {
             // Then
             verify(exactly = 1) { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) }
             assertEquals(2, result.size)
-            assertEquals("John Doe", result[0].name)
-            assertEquals("John Smith", result[1].name)
+            assertEquals("John", result[0].name)
+            assertEquals("John", result[1].name)
         }
 
         @Test
@@ -218,8 +218,7 @@ class UserServiceTest {
             // Given
             val names = listOf("John", "Jane")
             val expectedUsers = listOf(
-                UserBasic(id = 1L, name = "John Doe", age = 30, gender = Gender.MALE, email = "john.doe@example.com"),
-                UserBasic(id = 3L, name = "Jane Doe", age = 28, gender = Gender.FEMALE, email = "jane.doe@example.com")
+                UserBasic(id = 1L, name = "John", age = 30, gender = Gender.MALE, email = "john.doe@example.com"),
             )
 
             every { userRepository.findByNamesLimitedByCreatedAt(names) } returns expectedUsers
@@ -229,9 +228,8 @@ class UserServiceTest {
 
             // Then
             verify(exactly = 1) { userRepository.findByNamesLimitedByCreatedAt(names) }
-            assertEquals(2, result.size)
-            assertEquals("John Doe", result[0].name)
-            assertEquals("Jane Doe", result[1].name)
+            assertEquals(1, result.size)
+            assertEquals("John", result[0].name)
         }
     }
 
