@@ -11,7 +11,7 @@ services:
     build:
       context: ./chat-client
       args:
-        CHAT_SERVER: ws://chat-server:8080
+        CHAT_SERVER: ws://localhost:8080
     ports:
       - "3000:80"
     depends_on:
