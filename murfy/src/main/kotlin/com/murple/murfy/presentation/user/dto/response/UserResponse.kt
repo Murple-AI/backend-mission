@@ -1,7 +1,9 @@
 package com.murple.murfy.presentation.user.dto.response
 
 import com.murple.murfy.domain.user.model.UserAggregate
+import com.murple.murfy.domain.user.model.UserBasic
 import io.swagger.v3.oas.annotations.media.Schema
+import java.time.LocalDateTime
 import java.time.ZonedDateTime
 
 
@@ -29,10 +31,10 @@ data class UserResponse(
     val addresses: List<AddressResponse> = emptyList(),
 
     @Schema(description = "생성 일시", example = "2025-03-08T10:15:30+09:00")
-    val createdAt: ZonedDateTime,
+    val createdAt: LocalDateTime,
 
     @Schema(description = "수정 일시", example = "2025-03-08T10:15:30+09:00")
-    val updatedAt: ZonedDateTime
+    val updatedAt: LocalDateTime
 ) {
     companion object {
         fun from(model: UserAggregate): UserResponse {
@@ -69,13 +71,13 @@ data class UserBasicInfoResponse(
     val email: String? = null,
 
     @Schema(description = "생성 일시", example = "2025-03-08T10:15:30+09:00")
-    val createdAt: ZonedDateTime,
+    val createdAt: LocalDateTime,
 
     @Schema(description = "수정 일시", example = "2025-03-08T10:15:30+09:00")
-    val updatedAt: ZonedDateTime
+    val updatedAt: LocalDateTime
 ) {
     companion object {
-        fun from(model: UserAggregate): UserBasicInfoResponse {
+        fun from(model: UserBasic): UserBasicInfoResponse {
             return UserBasicInfoResponse(
                 id = model.id!!,
                 name = model.name,

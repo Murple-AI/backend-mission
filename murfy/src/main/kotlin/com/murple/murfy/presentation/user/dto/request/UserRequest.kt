@@ -44,7 +44,7 @@ data class UserBasicInfoRequest(
     @Schema(description = "사용자 나이", example = "30")
     val age: Int? = null,
 
-    @Schema(description = "사용자 성별", example = "남성")
+    @Schema(description = "사용자 성별", example = "male")
     val gender: String? = null,
 
     @Schema(description = "사용자 이메일", example = "user@example.com")

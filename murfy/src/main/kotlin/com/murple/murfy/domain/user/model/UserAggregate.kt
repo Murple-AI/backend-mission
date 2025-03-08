@@ -1,7 +1,7 @@
 package com.murple.murfy.domain.user.model
 
 import com.murple.murfy.domain.user.enums.Gender
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 
 
 data class UserAggregate(
@@ -12,8 +12,8 @@ data class UserAggregate(
     val email: String? = null,
     val phones: MutableList<Phone> = mutableListOf(),
     val addresses: MutableList<Address> = mutableListOf(),
-    val createdAt: ZonedDateTime = ZonedDateTime.now(),
-    val updatedAt: ZonedDateTime = ZonedDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now()
 ) {
     init {
         require(name.isNotBlank() && name.length <= 1024) { "The name must not be empty and must be at most 1024 characters long." }
@@ -36,8 +36,8 @@ data class UserBasic(
     val age: Int? = null,
     val gender: Gender? = null,
     val email: String? = null,
-    val createdAt: ZonedDateTime = ZonedDateTime.now(),
-    val updatedAt: ZonedDateTime = ZonedDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val updatedAt: LocalDateTime = LocalDateTime.now()
 ) {
     init {
         require(name.isNotBlank() && name.length <= 1024) { "The name must not be empty and must be at most 1024 characters long." }
