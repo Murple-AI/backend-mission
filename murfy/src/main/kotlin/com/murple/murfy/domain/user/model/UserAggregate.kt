@@ -30,7 +30,7 @@ data class UserAggregate(
 }
 
 
-class UserBasic(
+data class UserBasic(
     val id: Long? = null,
     val name: String,
     val age: Int? = null,
