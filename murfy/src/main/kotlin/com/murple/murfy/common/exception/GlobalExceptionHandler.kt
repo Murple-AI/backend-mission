@@ -1,7 +1,7 @@
 package com.murple.murfy.common.exception
 
-
 import mu.KotlinLogging
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -17,7 +17,7 @@ class GlobalExceptionHandler {
     fun handleIllegalArgumentException(e: IllegalArgumentException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             status = HttpStatus.BAD_REQUEST.value(),
-            message = e.message ?: "잘못된 요청입니다",
+            message = e.message ?: "Invalid request",
             timestamp = ZonedDateTime.now()
         )
         logger.error(e) {"${e.message}: bad request"}
@@ -28,18 +28,43 @@ class GlobalExceptionHandler {
     fun handleNoSuchElementException(e: NoSuchElementException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             status = HttpStatus.NOT_FOUND.value(),
-            message = e.message ?: "요청한 리소스를 찾을 수 없습니다",
+            message = e.message ?: "Resource not found",
             timestamp = ZonedDateTime.now()
         )
         logger.error(e) {"${e.message}: Not found error"}
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(DataIntegrityViolationException::class)
+    fun handleDataIntegrityViolationException(e: DataIntegrityViolationException): ResponseEntity<ErrorResponse> {
+        val rootCause = e.rootCause?.message ?: e.message ?: ""
+
+        val userFriendlyMessage = when {
+            rootCause.contains("phone_numbers_number_key") -> "Phone number already registered."
+            rootCause.contains("users_email_key") -> "Email already registered."
+            rootCause.contains("users_username_key") -> "Username already in use."
+            rootCause.contains("addresses_address_user_id_key") -> "Address already registered."
+            rootCause.contains("unique constraint") -> "Duplicate data exists."
+            rootCause.contains("foreign key constraint") -> "Referential integrity constraint violation."
+            else -> "Error occurred during data processing."
+        }
+
+        val errorResponse = ErrorResponse(
+            status = HttpStatus.BAD_REQUEST.value(),
+            message = userFriendlyMessage,
+            timestamp = ZonedDateTime.now()
+        )
+
+        logger.error(e) {"Data integrity violation: $rootCause"}
+
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            message = "서버 오류가 발생했습니다: ${e.message}",
+            message = "Server error occurred.",
             timestamp = ZonedDateTime.now()
         )
         logger.error(e) {"server error: ${e.message}"}
