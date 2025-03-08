@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import java.time.ZonedDateTime
 
 
 @Entity
@@ -39,9 +38,4 @@ class UserEntity(
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     val addresses: MutableList<AddressEntity> = mutableListOf(),
 
-    @Column(name = "created_at", nullable = false)
-    val createdAt: ZonedDateTime = ZonedDateTime.now(),
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: ZonedDateTime = ZonedDateTime.now()
-)
+): BaseTimeEntity()
