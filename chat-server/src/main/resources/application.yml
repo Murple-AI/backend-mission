@@ -2,6 +2,6 @@ spring:
   application:
     name: ChatServer
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/mission_db
+    url: r2dbc:postgresql://postgres:5432/mission_db
     username: postgres
     password: postgres
