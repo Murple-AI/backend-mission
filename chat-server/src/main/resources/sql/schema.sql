@@ -1,4 +1,3 @@
-
 create table if not exists user_info
 (
     id         bigserial
@@ -26,7 +25,7 @@ create table if not exists user_address
             references user_info,
     label      varchar(1024),
     address    varchar,
-    is_deleted   boolean      default false                not null,
+    is_deleted boolean      default false not null,
     updated_at timestamp(3) default CURRENT_TIMESTAMP(3),
     created_at timestamp(3) default CURRENT_TIMESTAMP(3)
 );

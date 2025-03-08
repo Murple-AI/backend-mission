@@ -13,7 +13,7 @@ class Responses {
         val email: String,
         val age: Int? = null,
         val gender: GenderType? = null,
-    ){
+    ) {
         companion object {
             fun from(
                 user: UserEntity,
@@ -36,13 +36,13 @@ class Responses {
         val age: Int? = null,
         val gender: GenderType? = null,
         val addresses: List<Address>,
-        val phoneNumbers: List<PhoneNumber>
+        val phoneNumbers: List<PhoneNumber>,
     ) {
         companion object {
             fun from(
                 user: UserEntity,
                 addresses: List<UserAddressEntity> = listOf(),
-                phoneNumbers: List<UserPhoneNumberEntity> = listOf()
+                phoneNumbers: List<UserPhoneNumberEntity> = listOf(),
             ): UserDetail {
                 return UserDetail(
                     id = user.id!!,
@@ -62,7 +62,7 @@ class Responses {
         val label: String,
         val countryCode: CountryCode? = null,
         val phoneNumber: String,
-        val isVerified: Boolean
+        val isVerified: Boolean,
     ) {
         companion object {
             fun from(entity: UserPhoneNumberEntity): PhoneNumber {

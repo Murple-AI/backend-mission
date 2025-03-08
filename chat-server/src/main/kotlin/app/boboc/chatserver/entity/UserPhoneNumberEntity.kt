@@ -16,5 +16,5 @@ data class UserPhoneNumberEntity(
     val isVerified: Boolean = false,
     val isDeleted: Boolean = false,
     val updatedAt: Instant = Instant.now(),
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
 )

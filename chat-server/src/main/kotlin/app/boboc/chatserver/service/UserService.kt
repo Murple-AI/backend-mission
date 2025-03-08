@@ -7,7 +7,6 @@ import app.boboc.chatserver.exceptions.MissionExceptions
 import app.boboc.chatserver.repository.UserAddressRepository
 import app.boboc.chatserver.repository.UserPhoneNumberRepository
 import app.boboc.chatserver.repository.UserRepository
-import org.springframework.data.domain.Limit
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class UserService(
     private val userRepository: UserRepository,
     private val userAddressRepository: UserAddressRepository,
-    private val userPhoneNumberRepository: UserPhoneNumberRepository
+    private val userPhoneNumberRepository: UserPhoneNumberRepository,
 ) {
     suspend fun getUsers(): List<Responses.User> {
         return userRepository.findAllByIsDeletedFalseOrderByCreatedAt().map {
@@ -30,7 +29,7 @@ class UserService(
 
     suspend fun getUser(userId: Long): Responses.UserDetail {
         return userRepository.findById(userId)?.run {
-            if(this.isDeleted) throw MissionExceptions.UserNotFoundException()
+            if (this.isDeleted) throw MissionExceptions.UserNotFoundException()
 
             Responses.UserDetail.from(
                 user = this,
@@ -73,6 +72,6 @@ class UserService(
                     isDeleted = true
                 )
             )
-        }  ?: throw MissionExceptions.UserNotFoundException()
+        } ?: throw MissionExceptions.UserNotFoundException()
     }
 }

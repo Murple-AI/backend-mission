@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.socket.WebSocketSession
 
 @Service
-class WebSocketSessionService  {
+class WebSocketSessionService {
 
     private val sessions = mutableMapOf<String, WebSocketSession>()
 
@@ -17,9 +17,9 @@ class WebSocketSessionService  {
         sessions.remove(session.id)
     }
 
-    suspend fun broadCastWithoutSender(senderId: String, message: String){
+    suspend fun broadCastWithoutSender(senderId: String, message: String) {
         sessions.forEach { (id, session) ->
-            if(id != senderId){
+            if (id != senderId) {
                 session.sendMessage(message)
             }
         }

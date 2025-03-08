@@ -13,5 +13,5 @@ data class UserAddressEntity(
     val address: String,
     val isDeleted: Boolean = false,
     val updatedAt: Instant = Instant.now(),
-    val createdAt: Instant = Instant.now()
+    val createdAt: Instant = Instant.now(),
 )

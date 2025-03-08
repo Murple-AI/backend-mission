@@ -4,10 +4,6 @@ import app.boboc.chatserver.service.UserService
 import app.boboc.chatserver.service.WebSocketSessionService
 import app.boboc.handler.CoroutineWebSocketHandler
 import app.boboc.util.WebSocketSessionUtil.sendMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.socket.WebSocketMessage
 import org.springframework.web.reactive.socket.WebSocketSession

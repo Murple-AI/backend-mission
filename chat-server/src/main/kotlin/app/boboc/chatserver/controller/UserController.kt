@@ -28,7 +28,8 @@ class UserController(
     suspend fun createUser(@RequestBody @Valid req: Requests.User) = userService.registerUser(req)
 
     @PutMapping("/{userId}")
-    suspend fun updateUser(@PathVariable userId: Long, @RequestBody @Valid req: Requests.User) = userService.updateUser(userId, req)
+    suspend fun updateUser(@PathVariable userId: Long, @RequestBody @Valid req: Requests.User) =
+        userService.updateUser(userId, req)
 
     @DeleteMapping("/{userId}")
     suspend fun deleteUser(@PathVariable userId: Long) = userService.deleteUser(userId)

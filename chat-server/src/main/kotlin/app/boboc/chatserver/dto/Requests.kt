@@ -24,7 +24,7 @@ class Requests {
         val countryCode: CountryCode? = null,
         @field:Pattern(regexp = "\\+[1-9]\\d{1,14}", message = "Invalid phone number format")
         val phoneNumber: String,
-        val isVerified: Boolean = false
+        val isVerified: Boolean = false,
     )
 
     data class Address(

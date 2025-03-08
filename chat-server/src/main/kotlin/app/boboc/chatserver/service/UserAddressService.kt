@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserAddressService(
     val userRepository: UserRepository,
-    val userAddressRepository: UserAddressRepository
+    val userAddressRepository: UserAddressRepository,
 ) {
     suspend fun getUserAddresses(userId: Long): List<Responses.Address> {
         if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()

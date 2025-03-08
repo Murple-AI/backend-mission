@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 @Service
 class UserPhoneNumberService(
     private val userRepository: UserRepository,
-    private val userPhoneNumberRepository: UserPhoneNumberRepository
+    private val userPhoneNumberRepository: UserPhoneNumberRepository,
 ) {
     suspend fun getPhoneNumbers(userId: Long): List<Responses.PhoneNumber> {
         if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
@@ -31,7 +31,7 @@ class UserPhoneNumberService(
     suspend fun registerUserPhoneNumber(userId: Long, req: Requests.PhoneNumber) {
         if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
         if (userPhoneNumberRepository.countByUserIdAndIsDeletedFalse(userId) >= 8) throw MissionExceptions.ExceedLimitPhoneNumberException()
-        if(req.countryCode != null && CountryCode.getCountryCodeFromPhoneNumber(req.phoneNumber) != req.countryCode) throw MissionExceptions.InvalidCountryCode()
+        if (req.countryCode != null && CountryCode.getCountryCodeFromPhoneNumber(req.phoneNumber) != req.countryCode) throw MissionExceptions.InvalidCountryCode()
 
         userPhoneNumberRepository.save(
             UserPhoneNumberEntity(
@@ -46,7 +46,7 @@ class UserPhoneNumberService(
 
     suspend fun updateUserPhoneNumber(userId: Long, phoneNumberId: Long, req: Requests.PhoneNumber) {
         if (!userRepository.existsByIdAndIsDeletedFalse(userId)) throw MissionExceptions.UserNotFoundException()
-        if(req.countryCode != null && CountryCode.getCountryCodeFromPhoneNumber(req.phoneNumber) != req.countryCode) throw MissionExceptions.InvalidCountryCode()
+        if (req.countryCode != null && CountryCode.getCountryCodeFromPhoneNumber(req.phoneNumber) != req.countryCode) throw MissionExceptions.InvalidCountryCode()
 
         userPhoneNumberRepository.findByIdAndUserIdAndIsDeletedFalse(phoneNumberId, userId)?.also {
             userPhoneNumberRepository.save(
