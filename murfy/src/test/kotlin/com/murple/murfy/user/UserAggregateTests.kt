@@ -159,7 +159,7 @@ class UserAggregateTest {
     @DisplayName("전화번호가 8개를 초과하면 예외 발생")
     fun moreThan8PhonesShouldThrowException() {
         val phones = MutableList(9) {
-            Phone(
+            Phone.of(
                 id = it.toLong(),
                 label = Label.HOME,
                 number = "+821012345678",
@@ -210,7 +210,7 @@ class UserAggregateTest {
     @Test
     @DisplayName("전화번호 객체 생성 및 유효성 검증 성공")
     fun createAndValidatePhoneSuccessfully() {
-        val phone = Phone(
+        val phone = Phone.of(
             label = Label.HOME,
             number = "+821012345678",
             countryCode = "KR",
@@ -227,7 +227,7 @@ class UserAggregateTest {
     @DisplayName("전화번호가 E164 형식이 아니면 예외 발생")
     fun phoneNumberNotInE164FormatShouldThrowException() {
         val exception = assertThrows<IllegalArgumentException> {
-            Phone(
+            Phone.of(
                 label = Label.HOME,
                 number = "1234567890", // + 접두사 누락
                 countryCode = "KR",
@@ -235,7 +235,7 @@ class UserAggregateTest {
             )
         }
 
-        assertEquals("The phone number must be in E.164 format (e.g., +821012345678).", exception.message)
+        assertEquals("Phone number must be in E.164 format (e.g., +821012345678), but got: 1234567890", exception.message)
     }
 
     @ParameterizedTest
@@ -243,7 +243,7 @@ class UserAggregateTest {
     @DisplayName("국가 코드가 2자가 아니면 예외 발생")
     fun countryCodeNotTwoCharsShouldThrowException(countryCode: String) {
         val exception = assertThrows<IllegalArgumentException> {
-            Phone(
+            Phone.of(
                 label = Label.HOME,
                 number = "+821012345678",
                 countryCode = countryCode,
@@ -251,14 +251,14 @@ class UserAggregateTest {
             )
         }
 
-        assertEquals("The country code must be two uppercase letters (ISO 3166-1 alpha-2).", exception.message)
+        assertEquals("Country code must be two uppercase letters (ISO 3166-1 alpha-2), but got: $countryCode", exception.message)
     }
 
     @Test
     @DisplayName("국가 코드가 대문자가 아니면 예외 발생")
     fun countryCodeNotUppercaseShouldThrowException() {
         val exception = assertThrows<IllegalArgumentException> {
-            Phone(
+            Phone.of(
                 label = Label.HOME,
                 number = "+821012345678",
                 countryCode = "kr", // 대문자여야 함
@@ -266,7 +266,7 @@ class UserAggregateTest {
             )
         }
 
-        assertEquals("The country code must be two uppercase letters (ISO 3166-1 alpha-2).", exception.message)
+        assertEquals("Country code must be two uppercase letters (ISO 3166-1 alpha-2), but got: kr", exception.message)
     }
 
     @Test

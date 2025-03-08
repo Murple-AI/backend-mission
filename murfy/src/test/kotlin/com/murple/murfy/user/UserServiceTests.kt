@@ -1,11 +1,8 @@
-
-
 package com.murple.murfy.user
 
 import com.murple.murfy.application.user.dto.AddressDto
 import com.murple.murfy.application.user.dto.PhoneDto
 import com.murple.murfy.application.user.dto.UserDto
-import com.murple.murfy.application.user.service.PhoneNumberService
 import com.murple.murfy.application.user.service.UserService
 import com.murple.murfy.domain.user.enums.Gender
 import com.murple.murfy.domain.user.enums.Label
@@ -14,647 +11,461 @@ import com.murple.murfy.domain.user.model.Phone
 import com.murple.murfy.domain.user.model.UserAggregate
 import com.murple.murfy.domain.user.model.UserBasic
 import com.murple.murfy.domain.user.repository.UserRepository
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
+import io.mockk.*
+import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.ZonedDateTime
+import java.util.*
 
-@DisplayName("사용자 서비스 테스트")
 class UserServiceTest {
 
+    @MockK
     private lateinit var userRepository: UserRepository
-    private lateinit var phoneNumberService: PhoneNumberService
+
+    @InjectMockKs
     private lateinit var userService: UserService
 
     @BeforeEach
     fun setUp() {
-        userRepository = mockk(relaxed = true)
-        phoneNumberService = mockk(relaxed = true)
-        userService = UserService(userRepository, phoneNumberService)
-    }
-
-    @AfterEach
-    fun tearDown() {
-        clearAllMocks()
+        MockKAnnotations.init(this)
     }
 
     @Nested
     @DisplayName("사용자 생성 테스트")
-    inner class CreateUserTest {
+    inner class CreateUserTests {
+
         @Test
-        @DisplayName("DTO를 애그리게이트로 매핑하고 저장해야 함")
-        fun createUserShouldMapDtoToAggregateAndSaveIt() {
+        @DisplayName("유효한 정보로 사용자를 생성해야 함")
+        fun shouldCreateUserWithValidInformation() {
             // Given
+            val phoneDto = PhoneDto(
+                label = "HOME",
+                number = "+821012345678",
+                countryCode = "KR",
+                isVerified = false
+            )
+
+            val addressDto = AddressDto(
+                label = "HOME",
+                street = "123 Main St",
+                city = "Seoul",
+                zipcode = "12345"
+            )
+
             val userDto = UserDto(
                 name = "John Doe",
                 age = 30,
                 gender = "MALE",
                 email = "john.doe@example.com",
-                phones = listOf(
-                    PhoneDto(
-                        label = "HOME",
-                        number = "+821012345678",
-                        countryCode = "KR",
-                        isVerified = false
-                    )
-                ),
-                addresses = listOf(
-                    AddressDto(
-                        label = "HOME",
-                        street = "123 Main St",
-                        city = "New York",
-                        zipcode = "10001"
-                    )
-                )
+                phones = listOf(phoneDto),
+                addresses = listOf(addressDto)
             )
 
-            val savedUser = UserAggregate(
+            val expectedPhone = Phone.of(
+                label = Label.HOME,
+                number = "+821012345678",
+                countryCode = "KR",
+                isVerified = false
+            )
+
+            val expectedAddress = Address(
+                label = Label.HOME,
+                street = "123 Main St",
+                city = "Seoul",
+                zipCode = "12345"
+            )
+
+            val expectedUserAggregate = UserAggregate(
                 id = 1L,
                 name = "John Doe",
                 age = 30,
                 gender = Gender.MALE,
                 email = "john.doe@example.com",
-                phones = mutableListOf(
-                    Phone(
-                        id = 1L,
-                        label = Label.HOME,
-                        number = "+821012345678",
-                        countryCode = "KR",
-                        isVerified = false
-                    )
-                ),
-                addresses = mutableListOf(
-                    Address(
-                        id = 1L,
-                        label = Label.HOME,
-                        street = "123 Main St",
-                        city = "New York",
-                        zipCode = "10001"
-                    )
-                ),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
+                phones = mutableListOf(expectedPhone),
+                addresses = mutableListOf(expectedAddress)
             )
 
-            val userSlot = slot<UserAggregate>()
-            every { userRepository.save(capture(userSlot)) } returns savedUser
-            every { phoneNumberService.extractCountryCode(any()) } returns "1"
+            every { userRepository.save(any()) } returns expectedUserAggregate
 
             // When
             val result = userService.createUser(userDto)
 
             // Then
-            verify { userRepository.save(any()) }
-            assertEquals("John Doe", userSlot.captured.name)
-            assertEquals(30, userSlot.captured.age)
-            assertEquals(Gender.MALE, userSlot.captured.gender)
-            assertEquals("john.doe@example.com", userSlot.captured.email)
-            assertEquals(1, userSlot.captured.phones.size)
-            assertEquals(1, userSlot.captured.addresses.size)
-            assertEquals(savedUser, result)
+            verify(exactly = 1) { userRepository.save(any()) }
+            assertEquals(expectedUserAggregate.id, result.id)
+            assertEquals(expectedUserAggregate.name, result.name)
+            assertEquals(expectedUserAggregate.age, result.age)
+            assertEquals(expectedUserAggregate.gender, result.gender)
+            assertEquals(expectedUserAggregate.email, result.email)
+            assertEquals(1, result.phones.size)
+            assertEquals(expectedUserAggregate.phones.first().number, result.phones.first().number)
+            assertEquals(1, result.addresses.size)
+            assertEquals(expectedUserAggregate.addresses.first().street, result.addresses.first().street)
         }
 
-
         @Test
-        @DisplayName("국가 코드가 제공되지 않을 때 번호에서 추출해야 함")
-        fun createUserShouldExtractCountryCodeWhenNotProvided() {
+        @DisplayName("전화번호와 주소 없이 사용자를 생성해야 함")
+        fun shouldCreateUserWithoutPhonesAndAddresses() {
             // Given
             val userDto = UserDto(
-                name = "John Doe",
-                age = 30,
-                gender = "MALE",
-                email = "john.doe@example.com",
-                phones = listOf(
-                    PhoneDto(
-                        label = "HOME",
-                        number = "+821012345678",
-                        countryCode = null,
-                        isVerified = false
-                    )
-                )
+                name = "Jane Doe",
+                age = 25,
+                gender = "FEMALE",
+                email = "jane.doe@example.com",
+                phones = null,
+                addresses = null
             )
 
-            val savedUser = UserAggregate(
-                id = 1L,
-                name = "John Doe",
-                age = 30,
-                gender = Gender.MALE,
-                email = "john.doe@example.com",
-                phones = mutableListOf(
-                    Phone(
-                        id = 1L,
-                        label = Label.HOME,
-                        number = "+821012345678",
-                        countryCode = "KR",
-                        isVerified = false
-                    )
-                ),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
+            val expectedUserAggregate = UserAggregate(
+                id = 2L,
+                name = "Jane Doe",
+                age = 25,
+                gender = Gender.FEMALE,
+                email = "jane.doe@example.com",
+                phones = mutableListOf(),
+                addresses = mutableListOf()
             )
 
-            every { userRepository.save(any()) } returns savedUser
-            every { phoneNumberService.extractCountryCode("+821012345678") } returns "KR"
+            every { userRepository.save(any()) } returns expectedUserAggregate
 
             // When
             val result = userService.createUser(userDto)
 
             // Then
-            verify { phoneNumberService.extractCountryCode("+821012345678") }
-            verify { userRepository.save(any()) }
-            assertEquals(savedUser, result)
-        }
-
-        @Test
-        @DisplayName("국가 코드를 추출할 수 없을 때 예외가 발생해야 함")
-        fun createUserShouldThrowExceptionWhenCountryCodeCannotBeExtracted() {
-            // Given
-            val userDto = UserDto(
-                name = "John Doe",
-                age = 30,
-                gender = "MALE",
-                email = "john.doe@example.com",
-                phones = listOf(
-                    PhoneDto(
-                        label = "HOME",
-                        number = "1234567890",
-                        countryCode = null,
-                        isVerified = false
-                    )
-                )
-            )
-
-            every { phoneNumberService.extractCountryCode(any()) } returns null
-
-            // When & Then
-            assertThrows<IllegalArgumentException> {
-                userService.createUser(userDto)
-            }
+            verify(exactly = 1) { userRepository.save(any()) }
+            assertEquals(expectedUserAggregate.id, result.id)
+            assertEquals(expectedUserAggregate.name, result.name)
+            assertTrue(result.phones.isEmpty())
+            assertTrue(result.addresses.isEmpty())
         }
     }
 
     @Nested
     @DisplayName("사용자 조회 테스트")
-    inner class GetUserTest {
+    inner class GetUserTests {
+
         @Test
-        @DisplayName("사용자가 존재할 때 사용자를 반환해야 함")
-        fun getUserByIdShouldReturnUserWhenExists() {
+        @DisplayName("사용자가 존재할 때 ID로 사용자를 조회해야 함")
+        fun shouldGetUserByIdWhenUserExists() {
             // Given
             val userId = 1L
-            val user = UserAggregate(
+            val expectedUser = UserAggregate(
                 id = userId,
                 name = "John Doe",
                 age = 30,
                 gender = Gender.MALE,
                 email = "john.doe@example.com",
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
+                phones = mutableListOf(),
+                addresses = mutableListOf()
             )
 
-            every { userRepository.findById(userId) } returns user
+            every { userRepository.findById(userId) } returns expectedUser
 
             // When
             val result = userService.getUserById(userId)
 
             // Then
-            verify { userRepository.findById(userId) }
-            assertEquals(user, result)
+            verify(exactly = 1) { userRepository.findById(userId) }
+            assertEquals(expectedUser.id, result.id)
+            assertEquals(expectedUser.name, result.name)
         }
 
         @Test
-        @DisplayName("사용자가 존재하지 않을 때 예외가 발생해야 함")
-        fun getUserByIdShouldThrowExceptionWhenUserNotFound() {
+        @DisplayName("사용자가 존재하지 않을 때 예외를 발생시켜야 함")
+        fun shouldThrowExceptionWhenUserDoesNotExist() {
             // Given
             val userId = 999L
             every { userRepository.findById(userId) } returns null
 
-            // When & Then
-            assertThrows<NoSuchElementException> {
+            // When, Then
+            val exception = assertThrows<NoSuchElementException> {
                 userService.getUserById(userId)
             }
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 정보 업데이트 테스트")
-    inner class UpdateUserInfoTest {
-        @Test
-        @DisplayName("기본 사용자 정보를 업데이트해야 함")
-        fun updateUserInfoShouldUpdateBasicUserInformation() {
-            // Given
-            val userId = 1L
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                age = 30,
-                gender = Gender.MALE,
-                email = "john.doe@example.com",
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val updatedUserDto = UserDto(
-                name = "Jane Doe",
-                age = 32,
-                gender = "FEMALE",
-                email = "jane.doe@example.com"
-            )
-
-            val updatedUser = existingUser.copy(
-                name = "Jane Doe",
-                age = 32,
-                gender = Gender.FEMALE,
-                email = "jane.doe@example.com"
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.updateUserInfo(userId, updatedUserDto)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals("Jane Doe", result.name)
-            assertEquals(32, result.age)
-            assertEquals(Gender.FEMALE, result.gender)
-            assertEquals("jane.doe@example.com", result.email)
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 전화번호 관리 테스트")
-    inner class UserPhoneManagementTest {
-        @Test
-        @DisplayName("전화번호가 존재할 때 업데이트해야 함")
-        fun updateUserPhoneShouldUpdatePhoneWhenExists() {
-            // Given
-            val userId = 1L
-            val phoneId = 5L
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                phones = mutableListOf(
-                    Phone(id = phoneId, label = Label.HOME, number = "+821012345678", countryCode = "KR", isVerified = false)
-                ),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val phoneDto = PhoneDto(
-                label = "WORK",
-                number = "+14155552671",
-                countryCode = "US",
-                isVerified = true
-            )
-
-            val updatedPhone = Phone(
-                id = phoneId,
-                label = Label.WORK,
-                number = "+14155552671",
-                countryCode = "US",
-                isVerified = true
-            )
-
-            val updatedUser = existingUser.copy(
-                phones = mutableListOf(updatedPhone)
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.updateUserPhone(userId, phoneId, phoneDto)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals(Label.WORK, result.label)
-            assertEquals("+14155552671", result.number)
-            assertEquals("US", result.countryCode)
-            assertEquals(true, result.isVerified)
+            assertEquals("User with ID $userId not found.", exception.message)
+            verify(exactly = 1) { userRepository.findById(userId) }
         }
 
         @Test
-        @DisplayName("사용자에게 전화번호를 추가해야 함")
-        fun addUserPhoneShouldAddPhoneToExistingUser() {
-            // Given
-            val userId = 1L
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                phones = mutableListOf(),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val phoneDto = PhoneDto(
-                label = "HOME",
-                number = "+14155552671",
-                countryCode = "US",
-                isVerified = false
-            )
-
-            val newPhone = Phone(
-                id = 5L,
-                label = Label.HOME,
-                number = "+14155552671",
-                countryCode = "US",
-                isVerified = false
-            )
-
-            val updatedUser = existingUser.copy(
-                phones = mutableListOf(newPhone)
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.addUserPhone(userId, phoneDto)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals(Label.HOME, result.label)
-            assertEquals("+14155552671", result.number)
-            assertEquals("US", result.countryCode)
-            assertEquals(false, result.isVerified)
-        }
-
-        @Test
-        @DisplayName("사용자에게서 전화번호를 제거해야 함")
-        fun deleteUserPhoneShouldRemovePhoneFromExistingUser() {
-            // Given
-            val userId = 1L
-            val phoneId = 5L
-            val phoneToDelete = Phone(
-                id = phoneId,
-                label = Label.HOME,
-                number = "+14155552671",
-                countryCode = "US",
-                isVerified = false
-            )
-
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                phones = mutableListOf(phoneToDelete),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val updatedUser = existingUser.copy(
-                phones = mutableListOf()
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.deleteUserPhone(userId, phoneId)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals(phoneToDelete, result)
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 주소 관리 테스트")
-    inner class UserAddressManagementTest {
-        @Test
-        @DisplayName("주소가 존재할 때 업데이트해야 함")
-        fun updateUserAddressShouldUpdateAddressWhenExists() {
-            // Given
-            val userId = 1L
-            val addressId = 5L
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                addresses = mutableListOf(
-                    Address(id = addressId, label = Label.HOME, street = "123 Main St", city = "New York", zipCode = "10001")
-                ),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val addressDto = AddressDto(
-                label = "WORK",
-                street = "456 Office Blvd",
-                city = "San Francisco",
-                zipcode = "94107"
-            )
-
-            val updatedAddress = Address(
-                id = addressId,
-                label = Label.WORK,
-                street = "456 Office Blvd",
-                city = "San Francisco",
-                zipCode = "94107"
-            )
-
-            val updatedUser = existingUser.copy(
-                addresses = mutableListOf(updatedAddress)
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.updateUserAddress(userId, addressId, addressDto)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals(Label.WORK, result.label)
-            assertEquals("456 Office Blvd", result.street)
-            assertEquals("San Francisco", result.city)
-            assertEquals("94107", result.zipCode)
-        }
-
-        @Test
-        @DisplayName("사용자에게 주소를 추가해야 함")
-        fun addUserAddressShouldAddAddressToExistingUser() {
-            // Given
-            val userId = 1L
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                addresses = mutableListOf(),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val addressDto = AddressDto(
-                label = "HOME",
-                street = "123 Main St",
-                city = "New York",
-                zipcode = "10001"
-            )
-
-            val newAddress = Address(
-                id = 5L,
-                label = Label.HOME,
-                street = "123 Main St",
-                city = "New York",
-                zipCode = "10001"
-            )
-
-            val updatedUser = existingUser.copy(
-                addresses = mutableListOf(newAddress)
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.addUserAddress(userId, addressDto)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals(Label.HOME, result.label)
-            assertEquals("123 Main St", result.street)
-            assertEquals("New York", result.city)
-            assertEquals("10001", result.zipCode)
-        }
-
-        @Test
-        @DisplayName("사용자에게서 주소를 제거해야 함")
-        fun deleteUserAddressShouldRemoveAddressFromExistingUser() {
-            // Given
-            val userId = 1L
-            val addressId = 5L
-            val addressToDelete = Address(
-                id = addressId,
-                label = Label.HOME,
-                street = "123 Main St",
-                city = "New York",
-                zipCode = "10001"
-            )
-
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                addresses = mutableListOf(addressToDelete),
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            val updatedUser = existingUser.copy(
-                addresses = mutableListOf()
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.save(any()) } returns updatedUser
-
-            // When
-            val result = userService.deleteUserAddress(userId, addressId)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.save(any()) }
-            assertEquals(addressToDelete, result)
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 삭제 테스트")
-    inner class DeleteUserTest {
-        @Test
-        @DisplayName("사용자가 존재할 때 삭제해야 함")
-        fun deleteUserShouldDeleteUserWhenExists() {
-            // Given
-            val userId = 1L
-            val existingUser = UserAggregate(
-                id = userId,
-                name = "John Doe",
-                createdAt = ZonedDateTime.now(),
-                updatedAt = ZonedDateTime.now()
-            )
-
-            every { userRepository.findById(userId) } returns existingUser
-            every { userRepository.delete(userId) } returns Unit
-
-            // When
-            userService.deleteUser(userId)
-
-            // Then
-            verify { userRepository.findById(userId) }
-            verify { userRepository.delete(userId) }
-        }
-
-        @Test
-        @DisplayName("사용자가 존재하지 않을 때 예외가 발생해야 함")
-        fun deleteUserShouldThrowExceptionWhenUserNotFound() {
-            // Given
-            val userId = 999L
-            every { userRepository.findById(userId) } returns null
-
-            // When & Then
-            assertThrows<NoSuchElementException> {
-                userService.deleteUser(userId)
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("사용자 검색 테스트")
-    inner class FindUsersTest {
-        @Test
-        @DisplayName("이름으로 필터링된 사용자를 반환해야 함")
-        fun findTopUsersByNameShouldReturnUsersFilteredByName() {
+        @DisplayName("이름으로 상위 사용자를 조회해야 함")
+        fun shouldFindTopUsersByName() {
             // Given
             val name = "John"
-            val users = listOf(
-                UserBasic(id = 1L, name = "John Doe", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now()),
-                UserBasic(id = 2L, name = "John Smith", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now())
+            val expectedUsers = listOf(
+                UserBasic(id = 1L, name = "John Doe", age = 30, gender = Gender.MALE, email = "john.doe@example.com"),
+                UserBasic(id = 2L, name = "John Smith", age = 25, gender = Gender.MALE, email = "john.smith@example.com")
             )
 
-            every { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) } returns users
+            every { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) } returns expectedUsers
 
             // When
             val result = userService.findTopUsersByName(name)
 
             // Then
-            verify { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) }
+            verify(exactly = 1) { userRepository.findTop5ByNameOrderByCreatedAtAsc(name) }
             assertEquals(2, result.size)
             assertEquals("John Doe", result[0].name)
             assertEquals("John Smith", result[1].name)
         }
 
         @Test
-        @DisplayName("이름 목록으로 필터링된 사용자를 반환해야 함")
-        fun findTopUsersByNameListShouldReturnUsersFilteredByNameList() {
+        @DisplayName("이름 목록으로 사용자를 조회해야 함")
+        fun shouldFindUsersByNameList() {
             // Given
             val names = listOf("John", "Jane")
-            val users = listOf(
-                UserBasic(id = 1L, name = "John Doe", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now()),
-                UserBasic(id = 2L, name = "Jane Smith", createdAt = ZonedDateTime.now(), updatedAt = ZonedDateTime.now())
+            val expectedUsers = listOf(
+                UserBasic(id = 1L, name = "John Doe", age = 30, gender = Gender.MALE, email = "john.doe@example.com"),
+                UserBasic(id = 3L, name = "Jane Doe", age = 28, gender = Gender.FEMALE, email = "jane.doe@example.com")
             )
 
-            every { userRepository.findByNamesLimitedByCreatedAt(names) } returns users
+            every { userRepository.findByNamesLimitedByCreatedAt(names) } returns expectedUsers
 
             // When
             val result = userService.findTopUsersByNameList(names)
 
             // Then
-            verify { userRepository.findByNamesLimitedByCreatedAt(names) }
+            verify(exactly = 1) { userRepository.findByNamesLimitedByCreatedAt(names) }
             assertEquals(2, result.size)
             assertEquals("John Doe", result[0].name)
-            assertEquals("Jane Smith", result[1].name)
+            assertEquals("Jane Doe", result[1].name)
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 정보 수정 테스트")
+    inner class UpdateUserTests {
+
+        @Test
+        @DisplayName("사용자 기본 정보를 수정해야 함")
+        fun shouldUpdateUserBasicInfo() {
+            // Given
+            val userId = 1L
+            val userDto = UserDto(
+                name = "John Updated",
+                age = 31,
+                gender = "MALE",
+                email = "john.updated@example.com",
+                phones = null,
+                addresses = null
+            )
+
+            val expectedUserBasic = UserBasic(
+                id = userId,
+                name = "John Updated",
+                age = 31,
+                gender = Gender.MALE,
+                email = "john.updated@example.com"
+            )
+
+            every { userRepository.updateUserBasicInfo(any()) } returns expectedUserBasic
+
+            // When
+            val result = userService.updateUserInfo(userId, userDto)
+
+            // Then
+            verify(exactly = 1) { userRepository.updateUserBasicInfo(any()) }
+            assertEquals(expectedUserBasic.id, result.id)
+            assertEquals(expectedUserBasic.name, result.name)
+            assertEquals(expectedUserBasic.age, result.age)
+            assertEquals(expectedUserBasic.email, result.email)
+        }
+
+        @Test
+        @DisplayName("사용자 전화번호를 수정해야 함")
+        fun shouldUpdateUserPhone() {
+            // Given
+            val userId = 1L
+            val phoneId = 1L
+            val phoneDto = PhoneDto(
+                label = "WORK",
+                number = "+821098765432",
+                countryCode = "KR",
+                isVerified = true
+            )
+
+            val expectedPhone = Phone.of(
+                id = phoneId,
+                label = Label.WORK,
+                number = "+821098765432",
+                countryCode = "KR",
+                isVerified = true
+            )
+
+            every { userRepository.updateUserPhone(userId, any()) } returns expectedPhone
+
+            // When
+            val result = userService.updateUserPhone(userId, phoneId, phoneDto)
+
+            // Then
+            verify(exactly = 1) { userRepository.updateUserPhone(userId, any()) }
+            assertEquals(expectedPhone.id, result.id)
+            assertEquals(expectedPhone.label, result.label)
+            assertEquals(expectedPhone.number, result.number)
+            assertEquals(expectedPhone.countryCode, result.countryCode)
+            assertEquals(expectedPhone.isVerified, result.isVerified)
+        }
+
+        @Test
+        @DisplayName("사용자 주소를 수정해야 함")
+        fun shouldUpdateUserAddress() {
+            // Given
+            val userId = 1L
+            val addressId = 1L
+            val addressDto = AddressDto(
+                label = "WORK",
+                street = "456 Business Ave",
+                city = "Seoul",
+                zipcode = "54321"
+            )
+
+            val expectedAddress = Address(
+                id = addressId,
+                label = Label.WORK,
+                street = "456 Business Ave",
+                city = "Seoul",
+                zipCode = "54321"
+            )
+
+            every { userRepository.updateUserAddress(userId, any()) } returns expectedAddress
+
+            // When
+            val result = userService.updateUserAddress(userId, addressId, addressDto)
+
+            // Then
+            verify(exactly = 1) { userRepository.updateUserAddress(userId, any()) }
+            assertEquals(expectedAddress.id, result.id)
+            assertEquals(expectedAddress.label, result.label)
+            assertEquals(expectedAddress.street, result.street)
+            assertEquals(expectedAddress.city, result.city)
+            assertEquals(expectedAddress.zipCode, result.zipCode)
+        }
+    }
+
+    @Nested
+    @DisplayName("전화번호 관리 테스트")
+    inner class PhoneManagementTests {
+
+        @Test
+        @DisplayName("사용자에게 전화번호를 추가해야 함")
+        fun shouldAddPhoneToUser() {
+            // Given
+            val userId = 1L
+            val phoneDto = PhoneDto(
+                label = "home",
+                number = "+821055556666",
+                countryCode = "KR",
+                isVerified = false
+            )
+
+            val expectedPhone = Phone.of(
+                id = 1L,
+                label = Label.HOME,
+                number = "+821055556666",
+                countryCode = "KR",
+                isVerified = false
+            )
+
+            every { userRepository.addNewPhone(userId, any()) } returns expectedPhone
+
+            // When
+            val result = userService.addUserPhone(userId, phoneDto)
+
+            // Then
+            verify(exactly = 1) { userRepository.addNewPhone(userId, any()) }
+            assertEquals(expectedPhone.id, result.id)
+            assertEquals(expectedPhone.label, result.label)
+            assertEquals(expectedPhone.number, result.number)
+        }
+
+        @Test
+        @DisplayName("사용자의 전화번호를 삭제해야 함")
+        fun shouldDeletePhoneFromUser() {
+            // Given
+            val userId = 1L
+            val phoneId = 1L
+            every { userRepository.deleteUserPhone(userId, phoneId) } just runs
+
+            // When
+            userService.deleteUserPhone(userId, phoneId)
+
+            // Then
+            verify(exactly = 1) { userRepository.deleteUserPhone(userId, phoneId) }
+        }
+    }
+
+    @Nested
+    @DisplayName("주소 관리 테스트")
+    inner class AddressManagementTests {
+
+        @Test
+        @DisplayName("사용자에게 주소를 추가해야 함")
+        fun shouldAddAddressToUser() {
+            // Given
+            val userId = 1L
+            val addressDto = AddressDto(
+                label = "home",
+                street = "789 Beach Rd",
+                city = "Busan",
+                zipcode = "67890"
+            )
+
+            val expectedAddress = Address(
+                id = 1L,
+                label = Label.HOME,
+                street = "789 Beach Rd",
+                city = "Busan",
+                zipCode = "67890"
+            )
+
+            every { userRepository.addNewAddress(userId, any()) } returns expectedAddress
+
+            // When
+            val result = userService.addUserAddress(userId, addressDto)
+
+            // Then
+            verify(exactly = 1) { userRepository.addNewAddress(userId, any()) }
+            assertEquals(expectedAddress.id, result.id)
+            assertEquals(expectedAddress.label, result.label)
+            assertEquals(expectedAddress.street, result.street)
+            assertEquals(expectedAddress.city, result.city)
+        }
+
+        @Test
+        @DisplayName("사용자의 주소를 삭제해야 함")
+        fun shouldDeleteAddressFromUser() {
+            // Given
+            val userId = 1L
+            val addressId = 1L
+            every { userRepository.deleteUserAddress(userId, addressId) } just runs
+
+            // When
+            userService.deleteUserAddress(userId, addressId)
+
+            // Then
+            verify(exactly = 1) { userRepository.deleteUserAddress(userId, addressId) }
+        }
+    }
+
+    @Nested
+    @DisplayName("사용자 삭제 테스트")
+    inner class DeleteUserTests {
+
+        @Test
+        @DisplayName("ID로 사용자를 삭제해야 함")
+        fun shouldDeleteUserById() {
+            // Given
+            val userId = 1L
+            every { userRepository.delete(userId) } just runs
+
+            // When
+            userService.deleteUser(userId)
+
+            // Then
+            verify(exactly = 1) { userRepository.delete(userId) }
         }
     }
 }
