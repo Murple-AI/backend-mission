@@ -1,0 +1,20 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    write-db:  # 쓰기용 데이터베이스
+      jdbc-url: ${WRITE_DATASOURCE_URL:jdbc:postgresql://postgres:5432/murple}
+      username: ${WRITE_DATASOURCE_USERNAME:postgres}
+      password: ${WRITE_DATASOURCE_PASSWORD:postgres}
+      driver-class-name: org.postgresql.Driver
+    read-db:  # 읽기용 데이터베이스
+      jdbc-url: ${READ_DATASOURCE_URL:jdbc:postgresql://postgres:5432/murple}
+      username: ${READ_DATASOURCE_USERNAME:postgres}
+      password: ${READ_DATASOURCE_PASSWORD:postgres}
+      driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

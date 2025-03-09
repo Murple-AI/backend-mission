@@ -1,40 +1,50 @@
 HELP.md
-.gradle
+
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
 
-### STS ###
+!build/libs/*.jar
+
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
+.springBeans/
+.sts4-cache/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.idea/workspace.xml  # 개인 환경 관련 파일 제외
 
-### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
 .vscode/
 
-### Kotlin ###
-.kotlin
+.DS_Store
+Thumbs.db
+*.log
+*.swp  # Vim swap 파일
+*.swo  # Vim swap 파일
+*.swn  # Vim swap 파일
+
+.kotlin/
+
+.env
+!env.example  # 예제 환경 변수 파일 포함

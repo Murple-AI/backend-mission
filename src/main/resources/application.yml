@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: wanho
+  profiles:
+    active: local
